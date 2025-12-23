@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Streamm - Movies, Series and Anime</title>
@@ -305,7 +304,7 @@
                 </div>
             </div>
             
-            <a href="https://t.me/FileAssist_Bot" class="telegram-only-btn" target="_blank">
+            <a href="https://t.me/File_AssistBot" class="telegram-only-btn" target="_blank">
                 <svg viewBox="0 0 24 24">
                     <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.324-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.015 3.333-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.142.121.1.154.234.169.359.015.124.034.398.019.612z"/>
                 </svg>
@@ -654,9 +653,11 @@
                 'servedbypropeller.com', 'propellerscdn.com', 'onclickmax.com', 'pushnest.com',
                 'notix.io', 'pushame.com', 'oapush.com', 'iclickcdn.com', 'outcomewithshe.com',
                 'glicmoty.net', 'acwebnc.com', 'sstatic.net', 'tsyndicate.com',
+                'thubanoa.com', // PropellerAds rewarded interstitial domain
                 // Adsterra
                 'adsterra.com', 'adsterracdn.com', 'astrfrm.com', 'hb-api.omnitagjs.com',
                 'profitabledisplaynetwork.com', 'highperformanceformat.com', 'adstera.com',
+                'pitofficialfollower.com', // Your Adsterra social bar domain
                 // Essential services
                 'themoviedb.org', 'image.tmdb.org', 'api.themoviedb.org',
                 'fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net',
@@ -1051,65 +1052,24 @@
     </script>
 
     <!-- ============================================ -->
-    <!-- PROPELLERADS - Push Notifications (Classic) -->
-    <!-- Replace YOUR_ZONE_ID with your actual zone ID -->
+    <!-- PROPELLERADS - Rewarded Interstitial -->
+    <!-- Shows rewarded ad before playing content -->
     <!-- ============================================ -->
     <script>
-        
-
-// Rewarded Popup
-
-show_10366687('pop').then(() => {
-    // user watch ad till the end or close it in interstitial format
-    // your code to reward user for rewarded format
-}).catch(e => {
-    // user get error during playing ad
-    // do nothing or whatever you want
-})
-
-        
+        // PropellerAds Rewarded Interstitial - Zone ID: 10366687
+        // This will be called when user clicks "Watch Ad for Bonus Content"
     </script>
 
     <!-- ============================================ -->
-    <!-- PROPELLERADS - In-Page Push Notifications -->
+    <!-- ADSTERRA - Social Bar -->
     <!-- ============================================ -->
-    <script>
-        // PropellerAds In-Page Push
-        // (function(d,z,s){s.src='//'+d+'/401/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('glicmoty.net','YOUR_INPAGE_PUSH_ZONE_ID',document.createElement('script'));
-    </script>
+    <script async="async" data-cfasync="false" src="https://pitofficialfollower.com/7bf782da742ab399d21c3a341973ec92/invoke.js"></script>
+    <div id="container-7bf782da742ab399d21c3a341973ec92"></div>
 
     <!-- ============================================ -->
-    <!-- PROPELLERADS - Interstitial Ads -->
+    <!-- ADSTERRA - Social Banner -->
     <!-- ============================================ -->
-    <script>
-        
-
-// Rewarded interstitial
-
-show_10366687().then(() => {
-    // You need to add your user reward function here, which will be executed after the user watches the ad.
-    // For more details, please refer to the detailed instructions.
-    alert('You have seen an ad!');
-})
-
-        
-    </script>
-
-    <!-- ============================================ -->
-    <!-- ADSTERRA - Social Bar (Vignette/In-Page Push) -->
-    <!-- ============================================ -->
-    <script>
-        // Adsterra Social Bar
-        // (function(d,z,s){s.src='https://'+d+'/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('www.highperformanceformat.com','YOUR_ADSTERRA_SOCIAL_BAR_ID',document.createElement('script'));
-    </script>
-
-    <!-- Top Vignette Banner (PropellerAds) -->
-    <div id="top-vignette" class="vignette-banner w-full p-3 flex items-center justify-center text-center">
-        <div>
-            <p class="text-xs text-purple-300 font-medium">🎬 Premium Streaming Experience</p>
-            <p class="text-[10px] text-gray-400 mt-1">Ad • PropellerAds</p>
-        </div>
-    </div>
+    <script src="https://pitofficialfollower.com/c5/9f/6a/c59f6a086f4cf5cc48a61ae8b34786e3.js"></script>
 
     <!-- Header -->
     <header class="sticky top-0 z-50 glass border-b border-white/10">
@@ -1136,16 +1096,18 @@ show_10366687().then(() => {
             <div id="trending-list" class="flex gap-3 overflow-x-auto pb-2"></div>
         </section>
 
-        <!-- Ad Banner After Trending (Adsterra Native) -->
-        <div class="ad-banner ad-native mb-4 p-3 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xl">🎥</div>
-                <div>
-                    <p class="text-sm font-medium">Watch Movies Online</p>
-                    <p class="text-xs text-gray-400">HD Quality Streaming</p>
-                </div>
-            </div>
-            <span class="text-[10px] text-gray-500">Ad</span>
+        <!-- Adsterra Banner 300x250 After Trending -->
+        <div id="adsterra-300x250-1" class="w-full flex justify-center mb-4">
+            <script>
+                atOptions = {
+                    'key' : '346c1275b0423d56f08ce1d87e38567e',
+                    'format' : 'iframe',
+                    'height' : 250,
+                    'width' : 300,
+                    'params' : {}
+                };
+            </script>
+            <script src="https://pitofficialfollower.com/346c1275b0423d56f08ce1d87e38567e/invoke.js"></script>
         </div>
 
         <!-- Popular Section -->
@@ -1154,18 +1116,54 @@ show_10366687().then(() => {
             <div id="popular-list" class="grid grid-cols-3 gap-3"></div>
         </section>
 
-        <!-- Ad Banner After Popular (PropellerAds Banner) -->
-        <div class="ad-banner mb-4 p-3 text-center">
-            <p class="text-xs text-gray-400">📺 Stream Unlimited Content</p>
-            <p class="text-[10px] text-gray-500 mt-1">Sponsored • PropellerAds</p>
+        <!-- Adsterra Banner 728x90 (Leaderboard) - Shows on larger screens -->
+        <div id="adsterra-728x90" class="hidden sm:flex w-full justify-center mb-4">
+            <script>
+                atOptions = {
+                    'key' : '0fba9ef1e22dd20f008f51a8d09d6e3e',
+                    'format' : 'iframe',
+                    'height' : 90,
+                    'width' : 728,
+                    'params' : {}
+                };
+            </script>
+            <script src="https://pitofficialfollower.com/0fba9ef1e22dd20f008f51a8d09d6e3e/invoke.js"></script>
         </div>
 
-        <!-- SmartLink CTA Button -->
+        <!-- Adsterra Banner 468x60 (Banner) - Mobile/Medium screens -->
+        <div id="adsterra-468x60" class="w-full flex justify-center mb-4 sm:hidden">
+            <script>
+                atOptions = {
+                    'key' : 'ad8b3c10ba4eebd07893b0b00f4506f3',
+                    'format' : 'iframe',
+                    'height' : 60,
+                    'width' : 468,
+                    'params' : {}
+                };
+            </script>
+            <script src="https://pitofficialfollower.com/ad8b3c10ba4eebd07893b0b00f4506f3/invoke.js"></script>
+        </div>
+
+        <!-- Adsterra SmartLink CTA Button -->
         <div class="mb-4">
             <a href="#" id="smartlink-cta" onclick="handleSmartLink(event)" class="smartlink-btn block w-full py-3 rounded-xl text-center font-semibold text-black">
                 🎁 Claim Your Free Premium Access
             </a>
-            <p class="text-[10px] text-gray-500 text-center mt-1">Sponsored Link</p>
+            <p class="text-[10px] text-gray-500 text-center mt-1">Adsterra SmartLink</p>
+        </div>
+
+        <!-- Adsterra Banner 320x50 (Mobile) -->
+        <div id="adsterra-320x50-mid" class="w-full flex justify-center mb-4">
+            <script>
+                atOptions = {
+                    'key' : 'cb0a9f0993122aaba39b218695c72b88',
+                    'format' : 'iframe',
+                    'height' : 50,
+                    'width' : 320,
+                    'params' : {}
+                };
+            </script>
+            <script src="https://pitofficialfollower.com/cb0a9f0993122aaba39b218695c72b88/invoke.js"></script>
         </div>
 
         <!-- Top Rated Section -->
@@ -1174,11 +1172,34 @@ show_10366687().then(() => {
             <div id="toprated-list" class="grid grid-cols-3 gap-3"></div>
         </section>
 
-        <!-- Ad Banner After Top Rated (Adsterra Banner) -->
-        <div class="ad-banner ad-banner-large mb-4 p-4 text-center flex flex-col justify-center">
-            <p class="text-sm font-medium text-purple-300">🌟 Exclusive Offers</p>
-            <p class="text-xs text-gray-400 mt-1">Limited Time Deals</p>
-            <p class="text-[10px] text-gray-500 mt-2">Ad • Adsterra</p>
+        <!-- Adsterra Banner 300x250 After Top Rated -->
+        <div id="adsterra-300x250-2" class="w-full flex justify-center mb-4">
+            <script>
+                atOptions = {
+                    'key' : '346c1275b0423d56f08ce1d87e38567e',
+                    'format' : 'iframe',
+                    'height' : 250,
+                    'width' : 300,
+                    'params' : {}
+                };
+            </script>
+            <script src="https://pitofficialfollower.com/346c1275b0423d56f08ce1d87e38567e/invoke.js"></script>
+        </div>
+
+        <!-- PropellerAds Rewarded Interstitial Button -->
+        <div class="mb-4">
+            <button onclick="showRewardedAd()" class="w-full py-3 rounded-xl text-center font-semibold text-white bg-gradient-to-r from-green-600 to-emerald-600 flex items-center justify-center gap-2">
+                🎁 Watch Ad for Bonus Content
+            </button>
+            <p class="text-[10px] text-gray-500 text-center mt-1">PropellerAds Rewarded Interstitial</p>
+        </div>
+
+        <!-- PropellerAds Rewarded Popup Button -->
+        <div class="mb-4">
+            <button onclick="showRewardedPopup()" class="w-full py-3 rounded-xl text-center font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center gap-2">
+                🎬 Watch Ad for HD Quality
+            </button>
+            <p class="text-[10px] text-gray-500 text-center mt-1">PropellerAds Rewarded Popup</p>
         </div>
 
         <!-- Coming Soon Section -->
@@ -1187,12 +1208,36 @@ show_10366687().then(() => {
             <div id="upcoming-list" class="grid grid-cols-3 gap-3"></div>
         </section>
 
-        <!-- Final Ad Banner -->
-        <div class="ad-banner p-3 text-center">
-            <p class="text-xs text-gray-400">🎬 More Movies & Shows</p>
-            <p class="text-[10px] text-gray-500 mt-1">Advertisement</p>
+        <!-- Adsterra Banner 160x300 (Wide Skyscraper) -->
+        <div id="adsterra-160x300" class="w-full flex justify-center mb-4">
+            <script>
+                atOptions = {
+                    'key' : 'ae63cca7a2b0ecb769fbb889f5b0427d',
+                    'format' : 'iframe',
+                    'height' : 300,
+                    'width' : 160,
+                    'params' : {}
+                };
+            </script>
+            <script src="https://pitofficialfollower.com/ae63cca7a2b0ecb769fbb889f5b0427d/invoke.js"></script>
+        </div>
+
+        <!-- Final Ad Banner - Adsterra 320x50 -->
+        <div id="adsterra-320x50-bottom" class="w-full flex justify-center mb-4">
+            <script>
+                atOptions = {
+                    'key' : 'cb0a9f0993122aaba39b218695c72b88',
+                    'format' : 'iframe',
+                    'height' : 50,
+                    'width' : 320,
+                    'params' : {}
+                };
+            </script>
+            <script src="https://pitofficialfollower.com/cb0a9f0993122aaba39b218695c72b88/invoke.js"></script>
         </div>
     </main>
+
+    <!-- Sidebar ads removed - were blocking view -->
 
     <!-- Search Modal -->
     <div id="search-modal" class="modal hide fixed inset-0 z-50 bg-black/95">
@@ -1259,10 +1304,34 @@ show_10366687().then(() => {
         </div>
         
         <div class="p-4">
-            <!-- Ad After Player -->
-            <div class="ad-banner mb-4 p-3 text-center">
-                <p class="text-xs text-gray-400">🎬 Continue Watching Ad-Free</p>
-                <p class="text-[10px] text-gray-500 mt-1">PropellerAds</p>
+            <!-- Adsterra 300x250 After Player -->
+            <div id="player-ad-300x250" class="w-full flex justify-center mb-4">
+                <script>
+                    atOptions = {
+                        'key' : '346c1275b0423d56f08ce1d87e38567e',
+                        'format' : 'iframe',
+                        'height' : 250,
+                        'width' : 300,
+                        'params' : {}
+                    };
+                </script>
+                <script src="https://pitofficialfollower.com/346c1275b0423d56f08ce1d87e38567e/invoke.js"></script>
+            </div>
+
+            <!-- PropellerAds Rewarded Interstitial in Player -->
+            <div class="mb-4">
+                <button onclick="showRewardedAd()" class="w-full py-3 rounded-xl text-center font-semibold text-white bg-gradient-to-r from-amber-500 to-orange-600 flex items-center justify-center gap-2">
+                    🎁 Watch Ad to Remove Ads for 1 Hour
+                </button>
+                <p class="text-[10px] text-gray-500 text-center mt-1">PropellerAds Rewarded Interstitial</p>
+            </div>
+
+            <!-- PropellerAds Rewarded Popup in Player -->
+            <div class="mb-4">
+                <button onclick="showRewardedPopup()" class="w-full py-3 rounded-xl text-center font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center gap-2">
+                    ⭐ Watch Ad for Premium Features
+                </button>
+                <p class="text-[10px] text-gray-500 text-center mt-1">PropellerAds Rewarded Popup</p>
             </div>
 
             <!-- Telegram Download -->
@@ -1283,17 +1352,40 @@ show_10366687().then(() => {
                 <div class="grid grid-cols-6 gap-2" id="player-episode-list"></div>
             </div>
             
-            <!-- Ad Banner -->
-            <div class="ad-banner mb-4 p-3 text-center">
-                <p class="text-xs text-gray-400">Sponsored Content</p>
-                <p class="text-[10px] text-gray-500 mt-1">Adsterra</p>
+            <!-- Adsterra 320x50 Banner -->
+            <div id="player-ad-320x50" class="w-full flex justify-center mb-4">
+                <script>
+                    atOptions = {
+                        'key' : 'cb0a9f0993122aaba39b218695c72b88',
+                        'format' : 'iframe',
+                        'height' : 50,
+                        'width' : 320,
+                        'params' : {}
+                    };
+                </script>
+                <script src="https://pitofficialfollower.com/cb0a9f0993122aaba39b218695c72b88/invoke.js"></script>
             </div>
 
-            <!-- SmartLink in Player -->
+            <!-- Adsterra SmartLink in Player -->
             <div class="mb-4">
                 <a href="#" onclick="handleSmartLink(event)" class="smartlink-btn block w-full py-3 rounded-xl text-center font-semibold text-black text-sm">
                     🔥 Get Premium Downloads
                 </a>
+                <p class="text-[10px] text-gray-500 text-center mt-1">Adsterra SmartLink</p>
+            </div>
+
+            <!-- Adsterra 468x60 Banner -->
+            <div id="player-ad-468x60" class="w-full flex justify-center mb-4">
+                <script>
+                    atOptions = {
+                        'key' : 'ad8b3c10ba4eebd07893b0b00f4506f3',
+                        'format' : 'iframe',
+                        'height' : 60,
+                        'width' : 468,
+                        'params' : {}
+                    };
+                </script>
+                <script src="https://pitofficialfollower.com/ad8b3c10ba4eebd07893b0b00f4506f3/invoke.js"></script>
             </div>
             
             <!-- Related Content -->
@@ -1375,63 +1467,130 @@ show_10366687().then(() => {
     </div>
 
     <!-- ============================================ -->
-    <!-- PROPELLERADS - Vignette Banner Script -->
+    <!-- ALL AD SCRIPTS - REPLACE ZONE IDS -->
+    <!-- ============================================ -->
+    
+    <!-- ============================================ -->
+    <!-- AD INTEGRATION COMPLETE -->
+    <!-- PropellerAds: Rewarded Interstitial (Zone: 10366687) -->
+    <!-- Adsterra: Social Bar (Zone: 7bf782da742ab399d21c3a341973ec92) -->
+    <!-- ============================================ -->
+    
+    <!-- 
+    TO ADD MORE ADSTERRA BANNERS:
+    
+    For each banner size, you'll get code like this from Adsterra:
+    <script async="async" data-cfasync="false" src="https://pitofficialfollower.com/ZONE_ID/invoke.js"></script>
+    <div id="container-ZONE_ID"></div>
+    
+    Replace the placeholder divs in the HTML with your actual Adsterra codes.
+    
+    BANNER SIZES TO ADD:
+    - Native Banner
+    - Banner 160x600
+    - Banner 728x90
+    - Banner 300x250
+    - Banner 160x300
+    - Banner 320x50
+    - Banner 468x60
+    - SmartLink (update ADSTERRA_SMARTLINK URL above)
+    -->
+
+    <!-- ============================================ -->
+    <!-- SMARTLINK & AD FUNCTIONS -->
     <!-- ============================================ -->
     <script>
+        // Adsterra SmartLink URL - Replace with your actual SmartLink
+        const ADSTERRA_SMARTLINK = 'https://www.profitabledisplaynetwork.com/jump/next.php?r=YOUR_SMARTLINK_ID';
         
-
-// In-App Interstitial
-
-show_10366687({
-  type: 'inApp',
-  inAppSettings: {
-    frequency: 2,
-    capping: 0.1,
-    interval: 30,
-    timeout: 5,
-    everyPage: false
-  }
-})
-
-/*
-This value is decoded as follows:
-- show automatically 2 ads
-  within 0.1 hours (6 minutes)
-  with a 30-second interval between them
-  and a 5-second delay before the first one is shown.
-  The last digit, 0, means that the session will be saved when you navigate between pages.
-  If you set the last digit as 1, then at any transition between pages,
-  the session will be reset, and the ads will start again.
-*/
-
-
-    </script>
-
-    <!-- ============================================ -->
-    <!-- ADSTERRA - Native Banner Script -->
-    <!-- ============================================ -->
-    <script>
-        // Adsterra Native Banner
-        // (function(d,z,s){s.src='https://'+d+'/native/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('www.profitabledisplaynetwork.com','YOUR_ADSTERRA_NATIVE_ID',document.createElement('script'));
-    </script>
-
-    <!-- ============================================ -->
-    <!-- SMARTLINK HANDLER -->
-    <!-- Replace with your actual SmartLink URLs -->
-    <!-- ============================================ -->
-    <script>
-        // SmartLink URLs - Replace with your actual links
-        const PROPELLER_SMARTLINK = 'https://otieu.com/4/10366134';
-        const ADSTERRA_SMARTLINK = 'https://your-adsterra-smartlink.com';
-        
+        // Handle SmartLink click
         function handleSmartLink(e) {
             e.preventDefault();
-            // Randomly choose between PropellerAds and Adsterra SmartLinks
-            const links = [PROPELLER_SMARTLINK, ADSTERRA_SMARTLINK];
-            const randomLink = links[Math.floor(Math.random() * links.length)];
-            window.open(randomLink, '_blank');
+            window.open(ADSTERRA_SMARTLINK, '_blank');
         }
+        
+        // PropellerAds Rewarded Interstitial - Zone ID: 10366687
+        function showRewardedAd(callback) {
+            if (typeof show_10366687 === 'function') {
+                show_10366687().then(() => {
+                    console.log('[Streamm] User watched rewarded ad');
+                    if (callback) callback();
+                }).catch((err) => {
+                    console.log('[Streamm] Rewarded ad error:', err);
+                    if (callback) callback();
+                });
+            } else {
+                console.log('[Streamm] Rewarded ad not loaded yet');
+                if (callback) callback();
+            }
+        }
+        
+        // PropellerAds In-App Interstitial - Zone ID: 10366687
+        function showInAppInterstitial() {
+            if (typeof show_10366687 === 'function') {
+                show_10366687({
+                    type: 'inApp',
+                    inAppSettings: {
+                        frequency: 2,
+                        capping: 0.1,
+                        interval: 30,
+                        timeout: 5,
+                        everyPage: false
+                    }
+                }).then(() => {
+                    console.log('[Streamm] In-App Interstitial shown');
+                }).catch((err) => {
+                    console.log('[Streamm] In-App Interstitial error:', err);
+                });
+            }
+        }
+        
+        // PropellerAds Rewarded Popup - Zone ID: 10366687
+        function showRewardedPopup(callback) {
+            if (typeof show_10366687 === 'function') {
+                show_10366687('pop').then(() => {
+                    console.log('[Streamm] User completed rewarded popup');
+                    if (callback) callback();
+                }).catch((err) => {
+                    console.log('[Streamm] Rewarded popup error:', err);
+                });
+            } else {
+                console.log('[Streamm] Rewarded popup not loaded yet');
+            }
+        }
+        
+        // Show interstitial before playing content
+        let adCounter = 0;
+        function maybeShowInterstitial() {
+            adCounter++;
+            // Show In-App Interstitial every 3 content plays
+            if (adCounter % 3 === 0) {
+                showInAppInterstitial();
+            }
+        }
+        
+        // Auto-initialize In-App Interstitial on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize In-App Interstitial with settings
+            setTimeout(function() {
+                if (typeof show_10366687 === 'function') {
+                    show_10366687({
+                        type: 'inApp',
+                        inAppSettings: {
+                            frequency: 2,
+                            capping: 0.1,
+                            interval: 30,
+                            timeout: 5,
+                            everyPage: false
+                        }
+                    });
+                }
+            }, 5000); // Show first interstitial after 5 seconds
+        });
     </script>
+    
+    <!-- PropellerAds Rewarded Interstitial Script - Zone ID: 10366687 -->
+    <script src="//thubanoa.com/1/10366687" data-cfasync="false" async></script>
 
     <script>
         // Telegram WebApp Init
@@ -1806,6 +1965,10 @@ This value is decoded as follows:
 
         async function playContent() {
             if (!currentItem) return;
+            
+            // Show interstitial before playing (every 3rd play)
+            maybeShowInterstitial();
+            
             initSourceButtons();
             
             const page = document.getElementById('player-page');
