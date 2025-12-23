@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="monetag" content="d39b3a638e8d3c8d199e4fb1f7a69f8e">
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Streamm - Movies, Series and Anime</title>
@@ -1055,8 +1055,19 @@
     <!-- Replace YOUR_ZONE_ID with your actual zone ID -->
     <!-- ============================================ -->
     <script>
-        // PropellerAds Push Notifications - Classic
-        // (function(d,z,s){s.src='//'+d+'/400/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('glicmoty.net','YOUR_PUSH_ZONE_ID',document.createElement('script'));
+        
+
+// Rewarded Popup
+
+show_10366687('pop').then(() => {
+    // user watch ad till the end or close it in interstitial format
+    // your code to reward user for rewarded format
+}).catch(e => {
+    // user get error during playing ad
+    // do nothing or whatever you want
+})
+
+        
     </script>
 
     <!-- ============================================ -->
@@ -1071,8 +1082,17 @@
     <!-- PROPELLERADS - Interstitial Ads -->
     <!-- ============================================ -->
     <script>
-        // PropellerAds Interstitial
-        // (function(s,u,z,p){s.src=u;s.setAttribute('data-zone',z);p.appendChild(s);})(document.createElement('script'),'//iclickcdn.com/tag.min.js','YOUR_INTERSTITIAL_ZONE_ID',document.body||document.documentElement);
+        
+
+// Rewarded interstitial
+
+show_10366687().then(() => {
+    // You need to add your user reward function here, which will be executed after the user watches the ad.
+    // For more details, please refer to the detailed instructions.
+    alert('You have seen an ad!');
+})
+
+        
     </script>
 
     <!-- ============================================ -->
@@ -1358,8 +1378,33 @@
     <!-- PROPELLERADS - Vignette Banner Script -->
     <!-- ============================================ -->
     <script>
-        // PropellerAds Vignette Banner
-        // (function(s,u,z,p){s.src=u;s.setAttribute('data-zone',z);p.appendChild(s);})(document.createElement('script'),'//voyager.outcomewithshe.com/v.js','YOUR_VIGNETTE_ZONE_ID',document.body||document.documentElement);
+        
+
+// In-App Interstitial
+
+show_10366687({
+  type: 'inApp',
+  inAppSettings: {
+    frequency: 2,
+    capping: 0.1,
+    interval: 30,
+    timeout: 5,
+    everyPage: false
+  }
+})
+
+/*
+This value is decoded as follows:
+- show automatically 2 ads
+  within 0.1 hours (6 minutes)
+  with a 30-second interval between them
+  and a 5-second delay before the first one is shown.
+  The last digit, 0, means that the session will be saved when you navigate between pages.
+  If you set the last digit as 1, then at any transition between pages,
+  the session will be reset, and the ads will start again.
+*/
+
+
     </script>
 
     <!-- ============================================ -->
@@ -1376,7 +1421,7 @@
     <!-- ============================================ -->
     <script>
         // SmartLink URLs - Replace with your actual links
-        const PROPELLER_SMARTLINK = 'https://your-propeller-smartlink.com';
+        const PROPELLER_SMARTLINK = 'https://otieu.com/4/10366134';
         const ADSTERRA_SMARTLINK = 'https://your-adsterra-smartlink.com';
         
         function handleSmartLink(e) {
@@ -1963,4 +2008,3 @@
     </script>
 </body>
 </html>
-
