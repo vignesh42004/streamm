@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Streamm - Movies, Series and Anime</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #0f0f0f; overscroll-behavior: none; }
+        /* Telegram Only Access Overlay */
+        .telegram-only-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+            z-index: 9999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .telegram-only-modal {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(0, 136, 204, 0.3);
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 380px;
+            text-align: center;
+            animation: modalSlide 0.4s ease;
+            box-shadow: 0 20px 60px rgba(0, 136, 204, 0.2);
+        }
+        @keyframes modalSlide {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .telegram-only-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #0088cc 0%, #0066aa 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            box-shadow: 0 10px 40px rgba(0, 136, 204, 0.4);
+        }
+        .telegram-only-icon svg {
+            width: 50px;
+            height: 50px;
+            fill: white;
+        }
+        .telegram-only-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+        }
+        .telegram-only-subtitle {
+            font-size: 16px;
+            color: #0088cc;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .telegram-only-text {
+            color: #9ca3af;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+        .telegram-only-btn {
+            background: linear-gradient(135deg, #0088cc 0%, #0066aa 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .telegram-only-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.5);
+        }
+        .telegram-only-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+        .telegram-only-features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .telegram-only-feature {
+            text-align: center;
+        }
+        .telegram-only-feature-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .telegram-only-feature-text {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+        .telegram-only-footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .telegram-only-hidden { display: none !important; }
+        /* Ad Blocker Detection Overlay */
+        .adblock-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.98);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        .adblock-modal {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 400px;
+            text-align: center;
+            animation: modalPop 0.3s ease;
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .adblock-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+        }
+        .adblock-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+        }
+        .adblock-text {
+            color: #9ca3af;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .adblock-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .adblock-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        .adblock-steps {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .adblock-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            color: #d1d5db;
+            font-size: 13px;
+        }
+        .adblock-step-num {
+            width: 24px;
+            height: 24px;
+            background: rgba(139, 92, 246, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #a78bfa;
+        }
+        .adblock-hidden { display: none !important; }
+        ::-webkit-scrollbar { width: 0; height: 0; }
+        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:active { transform: scale(0.96); }
+        .gradient-text { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .shimmer { background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .nav-item.active { color: #8b5cf6; }
+        .nav-item.active svg { stroke: #8b5cf6; }
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .source-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .bottom-nav { padding-bottom: env(safe-area-inset-bottom, 20px); }
+        .modal { transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .modal.show { opacity: 1; visibility: visible; }
+        .modal.hide { opacity: 0; visibility: hidden; }
+        .search-input:focus { box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.5); }
+        .poster-img { aspect-ratio: 2/3; object-fit: cover; }
+        .hero-gradient { background: linear-gradient(to top, #0f0f0f 0%, transparent 100%); }
+        .ad-banner { min-height: 60px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 12px; }
+        .ad-banner-large { min-height: 100px; }
+        .ad-native { min-height: 80px; background: linear-gradient(135deg, #1e1e3f 0%, #1a1a3a 100%); }
+        .source-btn.loading { opacity: 0.5; pointer-events: none; }
+        .error-state { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .telegram-btn { background: linear-gradient(135deg, #0088cc 0%, #0066aa 100%); }
+        .telegram-btn:hover { background: linear-gradient(135deg, #0077bb 0%, #005599 100%); }
+        .player-container { height: 220px; min-height: 220px; max-height: 220px; position: relative; }
+        @media (min-width: 640px) { .player-container { height: 300px; min-height: 300px; max-height: 300px; } }
+        .player-iframe { width: 100%; height: 100%; border: none; }
+        /* Fullscreen styles */
+        .player-container:fullscreen, .player-container:-webkit-full-screen, .player-container:-moz-full-screen { 
+            width: 100vw !important; height: 100vh !important; max-height: 100vh !important; background: #000; 
+        }
+        .player-container:fullscreen .player-iframe, .player-container:-webkit-full-screen .player-iframe { 
+            width: 100% !important; height: 100% !important; 
+        }
+        iframe:fullscreen, iframe:-webkit-full-screen, iframe:-moz-full-screen {
+            width: 100vw !important; height: 100vh !important;
+        }
+        /* Vignette Banner Style */
+        .vignette-banner { 
+            background: linear-gradient(135deg, #2d1b4e 0%, #1a1a3a 50%, #0d2137 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        /* SmartLink Button */
+        .smartlink-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen pb-20">
+    <!-- ============================================ -->
+    <!-- TELEGRAM MINI APP ONLY - Block browser access -->
+    <!-- ============================================ -->
+    <div id="telegram-only-overlay" class="telegram-only-overlay">
+        <div class="telegram-only-modal">
+            <div class="telegram-only-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.324-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.015 3.333-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.142.121.1.154.234.169.359.015.124.034.398.019.612z"/>
+                </svg>
+            </div>
+            <h1 class="telegram-only-title">Streamm</h1>
+            <p class="telegram-only-subtitle">Telegram Mini App Only</p>
+            <p class="telegram-only-text">
+                This streaming app is exclusively available inside Telegram. 
+                Open our bot to enjoy unlimited movies, series, and anime for free!
+            </p>
+            
+            <div class="telegram-only-features">
+                <div class="telegram-only-feature">
+                    <div class="telegram-only-feature-icon">🎬</div>
+                    <div class="telegram-only-feature-text">Movies</div>
+                </div>
+                <div class="telegram-only-feature">
+                    <div class="telegram-only-feature-icon">📺</div>
+                    <div class="telegram-only-feature-text">TV Series</div>
+                </div>
+                <div class="telegram-only-feature">
+                    <div class="telegram-only-feature-icon">🎌</div>
+                    <div class="telegram-only-feature-text">Anime</div>
+                </div>
+            </div>
+            
+            <a href="https://t.me/FileAssist_Bot" class="telegram-only-btn" target="_blank">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.324-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.015 3.333-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.142.121.1.154.234.169.359.015.124.034.398.019.612z"/>
+                </svg>
+                Open in Telegram
+            </a>
+            
+            <p class="telegram-only-footer">
+                💜 Free streaming with no registration required
+            </p>
+        </div>
+    </div>
+
+    <!-- TELEGRAM DETECTION SCRIPT -->
+    <script>
+        (function() {
+            'use strict';
+            
+            // Check if running inside Telegram Mini App
+            function isTelegramMiniApp() {
+                // Method 1: Check for Telegram WebApp object
+                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+                    return true;
+                }
+                
+                // Method 2: Check for Telegram WebApp initDataUnsafe
+                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && 
+                    Object.keys(window.Telegram.WebApp.initDataUnsafe).length > 0) {
+                    return true;
+                }
+                
+                // Method 3: Check URL parameters for Telegram data
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('tgWebAppData') || urlParams.has('tgWebAppStartParam')) {
+                    return true;
+                }
+                
+                // Method 4: Check hash for Telegram data
+                if (window.location.hash.includes('tgWebAppData')) {
+                    return true;
+                }
+                
+                // Method 5: Check for TelegramWebviewProxy (Android)
+                if (window.TelegramWebviewProxy) {
+                    return true;
+                }
+                
+                // Method 6: Check user agent for Telegram
+                const userAgent = navigator.userAgent.toLowerCase();
+                if (userAgent.includes('telegram') || userAgent.includes('tgweb')) {
+                    return true;
+                }
+                
+                // Method 7: Check if platform is set by Telegram
+                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.platform) {
+                    return true;
+                }
+                
+                return false;
+            }
+            
+            // Hide overlay if inside Telegram, show if not
+            function checkTelegramAccess() {
+                const overlay = document.getElementById('telegram-only-overlay');
+                
+                if (isTelegramMiniApp()) {
+                    // Inside Telegram - hide overlay and allow access
+                    if (overlay) {
+                        overlay.classList.add('telegram-only-hidden');
+                    }
+                    document.body.style.overflow = '';
+                    
+                    // Enable all content
+                    document.querySelectorAll('main, header, nav, .modal').forEach(el => {
+                        el.style.pointerEvents = '';
+                        el.style.filter = '';
+                        el.style.opacity = '';
+                    });
+                    
+                    console.log('[Streamm] Running inside Telegram Mini App ✓');
+                } else {
+                    // Not inside Telegram - show overlay and block access
+                    if (overlay) {
+                        overlay.classList.remove('telegram-only-hidden');
+                    }
+                    document.body.style.overflow = 'hidden';
+                    
+                    // Disable all content behind overlay
+                    document.querySelectorAll('main, header, nav, .modal').forEach(el => {
+                        el.style.pointerEvents = 'none';
+                        el.style.filter = 'blur(8px)';
+                        el.style.opacity = '0.3';
+                    });
+                    
+                    console.log('[Streamm] Access blocked - Not inside Telegram');
+                }
+            }
+            
+            // Run check when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', checkTelegramAccess);
+            } else {
+                checkTelegramAccess();
+            }
+            
+            // Also check after a short delay (in case Telegram SDK loads async)
+            setTimeout(checkTelegramAccess, 500);
+            setTimeout(checkTelegramAccess, 1500);
+            
+            // Expose function globally for re-checking
+            window.checkTelegramAccess = checkTelegramAccess;
+            
+        })();
+    </script>
+
+    <!-- ============================================ -->
+    <!-- AD BLOCKER DETECTION - Block users with adblockers -->
+    <!-- ============================================ -->
+    <div id="adblock-overlay" class="adblock-overlay adblock-hidden">
+        <div class="adblock-modal">
+            <div class="adblock-icon">🛡️</div>
+            <h2 class="adblock-title">Ad Blocker Detected</h2>
+            <p class="adblock-text">
+                We noticed you're using an ad blocker. Streamm is a free service supported by ads. 
+                Please disable your ad blocker to continue watching movies and series.
+            </p>
+            <div class="adblock-steps">
+                <div class="adblock-step">
+                    <span class="adblock-step-num">1</span>
+                    <span>Click on your ad blocker extension icon</span>
+                </div>
+                <div class="adblock-step">
+                    <span class="adblock-step-num">2</span>
+                    <span>Select "Pause" or "Disable" for this site</span>
+                </div>
+                <div class="adblock-step">
+                    <span class="adblock-step-num">3</span>
+                    <span>Refresh the page to continue</span>
+                </div>
+            </div>
+            <button class="adblock-btn" onclick="location.reload()">
+                I've Disabled Ad Blocker - Refresh
+            </button>
+            <p style="margin-top: 15px; font-size: 11px; color: #6b7280;">
+                We only show non-intrusive ads to keep our service free 💜
+            </p>
+        </div>
+    </div>
+
+    <!-- AD BLOCKER DETECTION SCRIPT -->
+    <script>
+        (function() {
+            'use strict';
+            
+            let adBlockDetected = false;
+            
+            // Method 1: Bait element detection
+            function createBait() {
+                const bait = document.createElement('div');
+                bait.className = 'ad ads adsbox ad-banner ad-placement ad-container google-ad googleAd adsbygoogle';
+                bait.id = 'ad-test-bait';
+                bait.style.cssText = 'width:1px;height:1px;position:absolute;left:-9999px;top:-9999px;background:transparent;';
+                bait.innerHTML = '&nbsp;';
+                document.body.appendChild(bait);
+                return bait;
+            }
+            
+            // Method 2: Check if ad scripts are blocked
+            function testAdScript() {
+                return new Promise((resolve) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+                    script.onerror = () => resolve(true);
+                    script.onload = () => resolve(false);
+                    setTimeout(() => resolve(true), 2000);
+                    document.head.appendChild(script);
+                    setTimeout(() => script.remove(), 2500);
+                });
+            }
+            
+            // Method 3: Check if common ad-related properties are blocked
+            function checkAdProperties() {
+                // Create a fake ad element
+                const testAd = document.createElement('div');
+                testAd.innerHTML = '&nbsp;';
+                testAd.className = 'adsbox';
+                testAd.style.cssText = 'width:1px;height:1px;position:absolute;left:-10000px;top:-10000px;';
+                document.body.appendChild(testAd);
+                
+                // Check if the element is hidden or has zero dimensions
+                const blocked = testAd.offsetHeight === 0 || 
+                               testAd.offsetWidth === 0 || 
+                               window.getComputedStyle(testAd).display === 'none' ||
+                               window.getComputedStyle(testAd).visibility === 'hidden';
+                
+                testAd.remove();
+                return blocked;
+            }
+            
+            // Method 4: Check if fetch to ad domains is blocked
+            async function testAdFetch() {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 2000);
+                    
+                    await fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
+                        method: 'HEAD',
+                        mode: 'no-cors',
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    return false;
+                } catch (e) {
+                    return true;
+                }
+            }
+            
+            // Method 5: Check for common ad blocker global variables
+            function checkAdBlockVars() {
+                const suspects = [
+                    'adBlocker', 'adblock', 'AdBlock', 'uBlock', 'ABP', 
+                    '__adblock', 'blockAdBlock', 'fuckAdBlock'
+                ];
+                return suspects.some(v => window[v] !== undefined);
+            }
+            
+            // Method 6: Detect by creating a "sponsored" element
+            function checkSponsoredElement() {
+                const sponsored = document.createElement('div');
+                sponsored.className = 'sponsored-ad textads banner_ad';
+                sponsored.style.cssText = 'width:1px;height:1px;position:absolute;left:-10000px;';
+                document.body.appendChild(sponsored);
+                
+                const rect = sponsored.getBoundingClientRect();
+                const blocked = rect.height === 0 || rect.width === 0;
+                sponsored.remove();
+                return blocked;
+            }
+            
+            // Main detection function
+            async function detectAdBlocker() {
+                // Wait for DOM
+                if (document.readyState !== 'complete') {
+                    await new Promise(resolve => window.addEventListener('load', resolve));
+                }
+                
+                // Small delay to let ad blockers do their thing
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Run all detection methods
+                const bait = createBait();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const baitBlocked = bait.offsetHeight === 0 || 
+                                   bait.offsetWidth === 0 || 
+                                   bait.clientHeight === 0 ||
+                                   window.getComputedStyle(bait).display === 'none';
+                bait.remove();
+                
+                const propsBlocked = checkAdProperties();
+                const varsDetected = checkAdBlockVars();
+                const sponsoredBlocked = checkSponsoredElement();
+                const scriptBlocked = await testAdScript();
+                const fetchBlocked = await testAdFetch();
+                
+                // If any 2+ methods detect ad blocker, show overlay
+                const detections = [baitBlocked, propsBlocked, varsDetected, sponsoredBlocked, scriptBlocked, fetchBlocked];
+                const positiveDetections = detections.filter(Boolean).length;
+                
+                console.log('[Streamm AdBlock Detection]', {
+                    bait: baitBlocked,
+                    props: propsBlocked,
+                    vars: varsDetected,
+                    sponsored: sponsoredBlocked,
+                    script: scriptBlocked,
+                    fetch: fetchBlocked,
+                    total: positiveDetections
+                });
+                
+                if (positiveDetections >= 2) {
+                    showAdBlockOverlay();
+                }
+            }
+            
+            function showAdBlockOverlay() {
+                adBlockDetected = true;
+                const overlay = document.getElementById('adblock-overlay');
+                if (overlay) {
+                    overlay.classList.remove('adblock-hidden');
+                    document.body.style.overflow = 'hidden';
+                    
+                    // Disable all interactions with the page
+                    document.querySelectorAll('main, header, nav, .modal').forEach(el => {
+                        el.style.pointerEvents = 'none';
+                        el.style.filter = 'blur(5px)';
+                    });
+                }
+            }
+            
+            // Also check periodically in case user enables ad blocker after load
+            function continuousCheck() {
+                if (!adBlockDetected) {
+                    const sponsored = document.createElement('div');
+                    sponsored.className = 'adsbox ad-test sponsored-ad';
+                    sponsored.style.cssText = 'width:1px;height:1px;position:absolute;left:-10000px;';
+                    document.body.appendChild(sponsored);
+                    
+                    setTimeout(() => {
+                        if (sponsored.offsetHeight === 0) {
+                            showAdBlockOverlay();
+                        }
+                        sponsored.remove();
+                    }, 100);
+                }
+            }
+            
+            // Run detection
+            detectAdBlocker();
+            
+            // Periodic check every 5 seconds
+            setInterval(continuousCheck, 5000);
+            
+            // Also check on visibility change (user switches tabs)
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && !adBlockDetected) {
+                    setTimeout(continuousCheck, 500);
+                }
+            });
+            
+        })();
+    </script>
+
+    <!-- ============================================ -->
+    <!-- ADVANCED AD BLOCKER v2.0 -->
+    <!-- Blocks ALL third-party ads, popups, trackers -->
+    <!-- Only allows PropellerAds and Adsterra -->
+    <!-- ============================================ -->
+    <script>
+        (function() {
+            'use strict';
+            
+            // ========== ALLOWED DOMAINS (Your ads + essential services) ==========
+            const ALLOWED_DOMAINS = [
+                // PropellerAds
+                'propellerads.com', 'propellerclick.com', 'propu.sh', 'propeller-tracking.com',
+                'servedbypropeller.com', 'propellerscdn.com', 'onclickmax.com', 'pushnest.com',
+                'notix.io', 'pushame.com', 'oapush.com', 'iclickcdn.com', 'outcomewithshe.com',
+                'glicmoty.net', 'acwebnc.com', 'sstatic.net', 'tsyndicate.com',
+                // Adsterra
+                'adsterra.com', 'adsterracdn.com', 'astrfrm.com', 'hb-api.omnitagjs.com',
+                'profitabledisplaynetwork.com', 'highperformanceformat.com', 'adstera.com',
+                // Essential services
+                'themoviedb.org', 'image.tmdb.org', 'api.themoviedb.org',
+                'fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net',
+                'telegram.org', 't.me',
+                // Streaming sources (only the player itself)
+                '2embed.cc', 'vidsrc.icu', 'vidsrc.cc', 'smashy.stream', 'autoembed.cc',
+                'nontongo.win', 'embed.su', 'vidsrc.me', 'vidsrc.to', 'vidsrc.xyz'
+            ];
+            
+            // ========== BLOCKED DOMAINS (Comprehensive list) ==========
+            const BLOCKED_DOMAINS = [
+                // Google Ads
+                'doubleclick.net', 'googlesyndication.com', 'googleadservices.com', 'google-analytics.com',
+                'googletagmanager.com', 'googletagservices.com', 'googleads.g.doubleclick.net', 'pagead2.googlesyndication.com',
+                'adservice.google.com', 'www-googletagmanager.com', '2mdn.net', 'gstatic.com/adsense',
+                // Facebook/Meta
+                'facebook.com', 'facebook.net', 'fbcdn.net', 'fb.com', 'connect.facebook.net',
+                // Major Ad Networks
+                'popads.net', 'popcash.net', 'popunder.net', 'pop.dolohen.com', 'popmyads.com',
+                'clickadu.com', 'clickadilla.com', 'clickaine.com', 'onclickads.net', 'onclicksuper.com',
+                'exoclick.com', 'exosrv.com', 'exdynsrv.com', 'realsrv.com', 'a-ads.com',
+                'juicyads.com', 'trafficjunky.com', 'trafficjunky.net', 'trafficfactory.biz',
+                'hilltopads.com', 'adcash.com', 'adxpansion.com', 'ero-advertising.com',
+                'plugrush.com', 'traffichunt.com', 'trafficstars.com', 'tsyndicate.com',
+                // Popup Networks
+                'propellerclick.com', 'popmyads.com', 'popadscdn.net', 'poperblocker.com',
+                'popt.partners', 'richpush.co', 'pushcrew.com', 'pushengage.com', 'pushwoosh.com',
+                'roostjs.com', 'sendpulse.com', 'webpushs.com', 'wonderpush.com',
+                // Native/Content Ads
+                'revcontent.com', 'mgid.com', 'outbrain.com', 'taboola.com', 'content.ad',
+                'contentad.net', 'adblade.com', 'nativo.com', 'sharethrough.com', 'plista.com',
+                // Programmatic/Exchange
+                'rubiconproject.com', 'pubmatic.com', 'openx.net', 'criteo.com', 'criteo.net',
+                'adsrvr.org', 'adnxs.com', 'appnexus.com', 'casalemedia.com', 'indexexchange.com',
+                'smartadserver.com', 'advertising.com', 'bidswitch.net', 'spotxchange.com',
+                'springserve.com', 'teads.com', 'tremorhub.com', 'triplelift.com',
+                // Video Ads
+                'ima.goog', 'imasdk.googleapis.com', 'vid.springserve.com', 'spotx.tv',
+                'aniview.com', 'connatix.com', 'primis.tech', 'teads.tv', 'viralize.com',
+                // Mobile Ad Networks
+                'applovin.com', 'mopub.com', 'inmobi.com', 'unity3d.com', 'unityads.unity3d.com',
+                'vungle.com', 'chartboost.com', 'ironsrc.com', 'is.com', 'startappexchange.com',
+                // Analytics/Tracking
+                'analytics.', 'tracker.', 'tracking.', 'pixel.', 'beacon.',
+                'hotjar.com', 'crazyegg.com', 'fullstory.com', 'mouseflow.com', 'luckyorange.com',
+                'smartlook.com', 'clicktale.net', 'inspectlet.com', 'logrocket.com', 'heap.io',
+                'mixpanel.com', 'amplitude.com', 'segment.com', 'rudderstack.com', 'mxpnl.com',
+                'quantserve.com', 'scorecardresearch.com', 'imrworldwide.com', 'nielsen.com',
+                'comscore.com', 'omtrdc.net', 'demdex.net', 'krxd.net', 'bluekai.com',
+                // Malware/Suspicious
+                'syndication.exdynsrv.com', 'go.adskeeper.com', 'a.medfoodhome.com', 'syndication.realsrv.com',
+                'abcnews.win', 'adexchangecloud.com', 'adfox.me', 'adhealers.com', 'admeking.com',
+                'admitad.com', 'adnium.com', 'adport.io', 'adspaying.com', 'adspyglass.com',
+                'advancets.com', 'adventori.com', 'affec.tv', 'affiliaxe.com', 'affiligate.com',
+                'affpaying.com', 'akamaihd.net', 'alfafile.net', 'alipromo.com', 'alxsite.com',
+                // Streaming Site Specific Ads
+                'megapopads.com', 'streamtape.com/ad', 'ads.stickyadstv.com', 'acscdn.com',
+                'ad.71i.de', 'ad.atdmt.com', 'ad.doubleclick.net', 'ad.gt', 'ad.yieldlab.net',
+                'adap.tv', 'adbooth.net', 'adc-serv.net', 'adchemy-content.com', 'adcolony.com',
+                'addthis.com', 'adecn.com', 'adengage.com', 'adextent.com', 'adf.ly',
+                'adform.com', 'adgear.com', 'adguru.net', 'adhese.com', 'adhood.com',
+                'adinch.com', 'adinfuse.com', 'adition.com', 'adjug.com', 'adjuggler.com',
+                'adjustnetwork.com', 'adkernel.com', 'adknowledge.com', 'adlegend.com',
+                'adloox.com', 'admaxim.com', 'adnxs-simple.com', 'adocean.pl', 'adop.cc',
+                'adoptim.com', 'adotmob.com', 'adpilot.com', 'adplxmd.com', 'adpushup.com',
+                'adreactor.com', 'adroll.com', 'adrta.com', 'adsafeprotected.com', 'adscale.de',
+                'adserver.yahoo.com', 'adsnative.com', 'adsonar.com', 'adspeed.net', 'adsrv.net',
+                'adswizz.com', 'adtdp.com', 'adtech.de', 'adtechus.com', 'adthrive.com',
+                'adtng.com', 'advangelists.com', 'adversal.com', 'adverticum.net', 'advertising.com',
+                'advertserve.com', 'advg.jp', 'adviad.com', 'adyoulike.com', 'adzerk.net',
+                'affiliateedge.com', 'affiliatefuture.com', 'aflfrm.com', 'aim4media.com',
+                'airpush.com', 'altervista.org', 'amgload.net', 'amobee.com', 'ampxchange.com',
+                // More suspicious domains
+                'freewebcontent.com', 'hd-plugin.com', 'instantlinktracker.com', 'li-con.com',
+                'linkbucks.com', 'linksynergy.com', 'liveadexchanger.com', 'lockerdome.com',
+                'lumovies.top', 'ly.gov.cn', 'madads.com', 'madvertise.com', 'mailmunch.co',
+                'marinsm.com', 'marketo.com', 'maxymiser.com', 'mb01.com', 'mbs.support',
+                // Common overlay/popup patterns
+                'overlay.', 'popup.', 'popunder.', 'interstitial.', 'preroll.', 'banner.',
+                // Additional blocks
+                'histats.com', 'statcounter.com', 'revolvermaps.com', 'liveinternet.ru',
+                'yandex.ru', 'mail.ru', 'rambler.ru', 'hit.ua', 'addtoany.com',
+                'sharethis.com', 'shareaholic.com', 'sumo.com', 'sumome.com', 'hellobar.com',
+                'optinmonster.com', 'sleeknote.com', 'wisepops.com', 'privy.com',
+                // New streaming ad domains
+                'filemoon.sx', 'streamwish.com', 'vidhide.com', 'upstream.to', 'mp4upload.com',
+                'mixdrop.co', 'doodstream.com', 'streamtape.com', 'vidoza.net', 'videobin.co'
+            ];
+            
+            // ========== BLOCKED URL PATTERNS ==========
+            const BLOCKED_PATTERNS = [
+                /pop(up|under|ads)/i, /\/ads?\//i, /\/advert/i, /banner/i, /sponsor/i,
+                /tracking/i, /analytics/i, /pixel\./i, /beacon/i, /telemetry/i,
+                /clicktrack/i, /impression/i, /\/track\//i, /\/collect/i,
+                /\.gif\?.*=/i, /\/stat\?/i, /\/log\?/i, /\/ping/i,
+                /overlay/i, /interstitial/i, /preroll/i, /vast\./i, /vpaid/i,
+                /watch\.json/i, /prebid/i, /header-bidding/i, /rtb/i
+            ];
+            
+            // ========== CHECK IF URL SHOULD BE BLOCKED ==========
+            function shouldBlock(url) {
+                if (!url || typeof url !== 'string') return false;
+                try {
+                    const urlObj = new URL(url, window.location.origin);
+                    const hostname = urlObj.hostname.toLowerCase();
+                    const fullUrl = urlObj.href.toLowerCase();
+                    
+                    // Allow our domains
+                    if (ALLOWED_DOMAINS.some(d => hostname.includes(d) || hostname.endsWith('.' + d))) {
+                        return false;
+                    }
+                    
+                    // Block known bad domains
+                    if (BLOCKED_DOMAINS.some(d => hostname.includes(d))) {
+                        return true;
+                    }
+                    
+                    // Block matching patterns
+                    if (BLOCKED_PATTERNS.some(p => p.test(fullUrl))) {
+                        return true;
+                    }
+                    
+                    return false;
+                } catch { return false; }
+            }
+            
+            // ========== BLOCK window.open (POPUPS) ==========
+            const origOpen = window.open;
+            window.open = function(url, name, features) {
+                // Block ALL popups except our allowed domains
+                if (!url) return null;
+                try {
+                    const hostname = new URL(url, window.location.origin).hostname;
+                    if (!ALLOWED_DOMAINS.some(d => hostname.includes(d))) {
+                        console.log('[Streamm] Blocked popup:', url);
+                        return null;
+                    }
+                } catch {
+                    console.log('[Streamm] Blocked popup:', url);
+                    return null;
+                }
+                return origOpen.apply(this, arguments);
+            };
+            
+            // ========== BLOCK CLICK HIJACKING ==========
+            document.addEventListener('click', function(e) {
+                // Prevent clicks from opening unwanted windows
+                const target = e.target.closest('a');
+                if (target && target.href) {
+                    try {
+                        const hostname = new URL(target.href).hostname;
+                        if (!ALLOWED_DOMAINS.some(d => hostname.includes(d)) && 
+                            !hostname.includes(window.location.hostname)) {
+                            if (target.target === '_blank' || e.ctrlKey || e.metaKey) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('[Streamm] Blocked redirect:', target.href);
+                                return false;
+                            }
+                        }
+                    } catch {}
+                }
+            }, true);
+            
+            // ========== BLOCK MOUSE EVENTS HIJACKING ==========
+            ['mousedown', 'mouseup', 'contextmenu'].forEach(evt => {
+                document.addEventListener(evt, function(e) {
+                    if (e.target.closest('iframe:not(#player-frame)')) {
+                        // Allow events, but prevent external redirects
+                    }
+                }, true);
+            });
+            
+            // ========== BLOCK FETCH REQUESTS ==========
+            const origFetch = window.fetch;
+            window.fetch = function(input, init) {
+                const url = typeof input === 'string' ? input : input?.url;
+                if (url && shouldBlock(url)) {
+                    console.log('[Streamm] Blocked fetch:', url);
+                    return Promise.reject(new Error('Blocked by Streamm'));
+                }
+                return origFetch.apply(this, arguments);
+            };
+            
+            // ========== BLOCK XHR REQUESTS ==========
+            const origXHROpen = XMLHttpRequest.prototype.open;
+            const origXHRSend = XMLHttpRequest.prototype.send;
+            XMLHttpRequest.prototype.open = function(method, url) {
+                this._blockedByStreamm = shouldBlock(url);
+                if (this._blockedByStreamm) console.log('[Streamm] Blocked XHR:', url);
+                return origXHROpen.apply(this, arguments);
+            };
+            XMLHttpRequest.prototype.send = function() {
+                if (this._blockedByStreamm) return;
+                return origXHRSend.apply(this, arguments);
+            };
+            
+            // ========== BLOCK SCRIPT INJECTION ==========
+            const origCreateElement = document.createElement.bind(document);
+            document.createElement = function(tagName) {
+                const el = origCreateElement(tagName);
+                if (tagName.toLowerCase() === 'script') {
+                    const origSetSrc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src')?.set;
+                    Object.defineProperty(el, 'src', {
+                        set: function(value) {
+                            if (value && shouldBlock(value)) {
+                                console.log('[Streamm] Blocked script:', value);
+                                return;
+                            }
+                            origSetSrc?.call(this, value);
+                        },
+                        get: function() {
+                            return this.getAttribute('src');
+                        }
+                    });
+                }
+                if (tagName.toLowerCase() === 'iframe') {
+                    const origSetSrc = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'src')?.set;
+                    Object.defineProperty(el, 'src', {
+                        set: function(value) {
+                            if (value && shouldBlock(value)) {
+                                console.log('[Streamm] Blocked iframe:', value);
+                                return;
+                            }
+                            origSetSrc?.call(this, value);
+                        },
+                        get: function() {
+                            return this.getAttribute('src');
+                        }
+                    });
+                }
+                return el;
+            };
+            
+            // ========== BLOCK BEFOREUNLOAD POPUPS ==========
+            window.addEventListener('beforeunload', function(e) {
+                // Prevent "are you sure you want to leave" popups
+                delete e.returnValue;
+            });
+            
+            // ========== BLOCK VISIBILITY CHANGE ADS ==========
+            let visibilityBlocked = false;
+            document.addEventListener('visibilitychange', function(e) {
+                if (!visibilityBlocked) {
+                    visibilityBlocked = true;
+                    setTimeout(() => visibilityBlocked = false, 100);
+                }
+            }, true);
+            
+            // ========== REMOVE AD ELEMENTS FROM DOM ==========
+            const adSelectors = [
+                // ID patterns
+                '[id*="google_ads"]', '[id*="google-ad"]', '[id*="googleAd"]',
+                '[id^="aswift_"]', '[id^="google_ads"]', '[id*="adslot"]',
+                '[id*="ad-slot"]', '[id*="ad_slot"]', '[id*="banner-ad"]',
+                '[id*="ad-banner"]', '[id*="ad_banner"]', '[id*="popunder"]',
+                '[id*="popup-ad"]', '[id*="pop-ad"]',
+                // Class patterns
+                '[class*="ad-container"]', '[class*="ad_container"]', '[class*="adContainer"]',
+                '[class*="google-ad"]', '[class*="googleAd"]', '[class*="adsbox"]',
+                '[class*="ad-wrapper"]', '[class*="ad_wrapper"]', '[class*="adWrapper"]',
+                '[class*="ad-unit"]', '[class*="ad_unit"]', '[class*="adUnit"]',
+                '[class*="banner-ad"]', '[class*="sponsor"]', '[class*="advertisement"]',
+                '[class*="pop-up"]', '[class*="popup"]', '[class*="overlay-ad"]',
+                '[class*="interstitial"]', '[class*="modal-ad"]',
+                // Tag types
+                'ins.adsbygoogle', 'amp-ad', 'amp-embed', 'amp-sticky-ad',
+                // Overlay divs
+                'div[style*="z-index: 999999"]', 'div[style*="z-index:999999"]',
+                'div[style*="position: fixed"][style*="z-index"]',
+                // Iframes from ad networks
+                'iframe[src*="doubleclick"]', 'iframe[src*="googlesyndication"]',
+                'iframe[src*="googleads"]', 'iframe[src*="facebook.com/plugins"]',
+                'iframe[src*="ads"]', 'iframe[id*="google_ads"]'
+            ];
+            
+            function removeAdElements() {
+                adSelectors.forEach(selector => {
+                    try {
+                        document.querySelectorAll(selector).forEach(el => {
+                            // Don't remove our own ad banners
+                            if (!el.closest('.ad-banner') && !el.closest('.vignette-banner') && 
+                                !el.closest('.smartlink-btn') && el.id !== 'player-frame') {
+                                el.remove();
+                                console.log('[Streamm] Removed ad element:', selector);
+                            }
+                        });
+                    } catch {}
+                });
+                
+                // Remove high z-index overlays (likely popups)
+                document.querySelectorAll('div, section, aside').forEach(el => {
+                    try {
+                        const style = window.getComputedStyle(el);
+                        const zIndex = parseInt(style.zIndex);
+                        if (zIndex > 9999 && style.position === 'fixed' && 
+                            !el.closest('.modal') && !el.closest('nav') && !el.closest('header')) {
+                            el.remove();
+                            console.log('[Streamm] Removed overlay');
+                        }
+                    } catch {}
+                });
+            }
+            
+            // Run cleanup periodically
+            setInterval(removeAdElements, 500);
+            
+            // Also observe for new elements
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach(mutation => {
+                    mutation.addedNodes.forEach(node => {
+                        if (node.nodeType === 1) { // Element node
+                            // Check if it's an ad iframe
+                            if (node.tagName === 'IFRAME' && node.id !== 'player-frame') {
+                                const src = node.src || '';
+                                if (shouldBlock(src)) {
+                                    node.remove();
+                                    console.log('[Streamm] Removed injected iframe');
+                                }
+                            }
+                            // Check if it's a script
+                            if (node.tagName === 'SCRIPT') {
+                                const src = node.src || '';
+                                if (src && shouldBlock(src)) {
+                                    node.remove();
+                                    console.log('[Streamm] Removed injected script');
+                                }
+                            }
+                            // Check for popup divs
+                            if (node.tagName === 'DIV') {
+                                const style = node.getAttribute('style') || '';
+                                if (style.includes('z-index') && style.includes('position')) {
+                                    const zMatch = style.match(/z-index\s*:\s*(\d+)/);
+                                    if (zMatch && parseInt(zMatch[1]) > 9999) {
+                                        if (!node.closest('.modal') && !node.closest('#player-page')) {
+                                            node.remove();
+                                            console.log('[Streamm] Removed popup div');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+            });
+            
+            observer.observe(document.documentElement, {
+                childList: true,
+                subtree: true
+            });
+            
+            // ========== BLOCK FOCUS STEALING ==========
+            let lastFocusTime = 0;
+            window.addEventListener('blur', function(e) {
+                const now = Date.now();
+                if (now - lastFocusTime < 100) {
+                    window.focus();
+                }
+                lastFocusTime = now;
+            });
+            
+            // ========== BLOCK NOTIFICATION REQUESTS (from streaming sites) ==========
+            if ('Notification' in window) {
+                const origRequestPermission = Notification.requestPermission;
+                Notification.requestPermission = function() {
+                    console.log('[Streamm] Blocked notification request from streaming site');
+                    return Promise.resolve('denied');
+                };
+            }
+            
+            // ========== BLOCK GEOLOCATION REQUESTS ==========
+            if ('geolocation' in navigator) {
+                const origGetCurrentPosition = navigator.geolocation.getCurrentPosition;
+                navigator.geolocation.getCurrentPosition = function(success, error) {
+                    console.log('[Streamm] Blocked geolocation request');
+                    if (error) error({ code: 1, message: 'Blocked by Streamm' });
+                };
+            }
+            
+            // ========== CLEAN URL ON PAGE LOAD ==========
+            if (window.location.search.includes('utm_') || window.location.search.includes('ref=')) {
+                const url = new URL(window.location.href);
+                ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'ref', 'source'].forEach(p => {
+                    url.searchParams.delete(p);
+                });
+                window.history.replaceState({}, '', url.toString());
+            }
+            
+            console.log('%c[Streamm AdBlock v2.0] Active', 'color: #8b5cf6; font-weight: bold; font-size: 14px;');
+            console.log('%cBlocking ads, popups, and trackers. Only PropellerAds & Adsterra allowed.', 'color: #a78bfa;');
+        })();
+    </script>
+
+    <!-- ============================================ -->
+    <!-- PROPELLERADS - Push Notifications (Classic) -->
+    <!-- Replace YOUR_ZONE_ID with your actual zone ID -->
+    <!-- ============================================ -->
+    <script>
+        // PropellerAds Push Notifications - Classic
+        // (function(d,z,s){s.src='//'+d+'/400/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('glicmoty.net','YOUR_PUSH_ZONE_ID',document.createElement('script'));
+    </script>
+
+    <!-- ============================================ -->
+    <!-- PROPELLERADS - In-Page Push Notifications -->
+    <!-- ============================================ -->
+    <script>
+        // PropellerAds In-Page Push
+        // (function(d,z,s){s.src='//'+d+'/401/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('glicmoty.net','YOUR_INPAGE_PUSH_ZONE_ID',document.createElement('script'));
+    </script>
+
+    <!-- ============================================ -->
+    <!-- PROPELLERADS - Interstitial Ads -->
+    <!-- ============================================ -->
+    <script>
+        // PropellerAds Interstitial
+        // (function(s,u,z,p){s.src=u;s.setAttribute('data-zone',z);p.appendChild(s);})(document.createElement('script'),'//iclickcdn.com/tag.min.js','YOUR_INTERSTITIAL_ZONE_ID',document.body||document.documentElement);
+    </script>
+
+    <!-- ============================================ -->
+    <!-- ADSTERRA - Social Bar (Vignette/In-Page Push) -->
+    <!-- ============================================ -->
+    <script>
+        // Adsterra Social Bar
+        // (function(d,z,s){s.src='https://'+d+'/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('www.highperformanceformat.com','YOUR_ADSTERRA_SOCIAL_BAR_ID',document.createElement('script'));
+    </script>
+
+    <!-- Top Vignette Banner (PropellerAds) -->
+    <div id="top-vignette" class="vignette-banner w-full p-3 flex items-center justify-center text-center">
+        <div>
+            <p class="text-xs text-purple-300 font-medium">🎬 Premium Streaming Experience</p>
+            <p class="text-[10px] text-gray-400 mt-1">Ad • PropellerAds</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 glass border-b border-white/10">
+        <div class="flex items-center justify-between p-4">
+            <h1 class="text-xl font-bold gradient-text">Streamm</h1>
+            <button onclick="openSearch()" class="p-2 rounded-full hover:bg-white/10">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </button>
+        </div>
+        <div class="flex gap-2 px-4 pb-3 overflow-x-auto">
+            <button onclick="switchCategory('movie')" class="cat-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-purple-600" data-cat="movie">Movies</button>
+            <button onclick="switchCategory('tv')" class="cat-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-white/10" data-cat="tv">TV Series</button>
+            <button onclick="switchCategory('anime')" class="cat-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-white/10" data-cat="anime">Anime</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="px-4 py-4">
+        <!-- Trending Section -->
+        <section id="trending-section" class="mb-4">
+            <h2 class="text-lg font-semibold mb-3">🔥 Trending Now</h2>
+            <div id="trending-list" class="flex gap-3 overflow-x-auto pb-2"></div>
+        </section>
+
+        <!-- Ad Banner After Trending (Adsterra Native) -->
+        <div class="ad-banner ad-native mb-4 p-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xl">🎥</div>
+                <div>
+                    <p class="text-sm font-medium">Watch Movies Online</p>
+                    <p class="text-xs text-gray-400">HD Quality Streaming</p>
+                </div>
+            </div>
+            <span class="text-[10px] text-gray-500">Ad</span>
+        </div>
+
+        <!-- Popular Section -->
+        <section id="popular-section" class="mb-4">
+            <h2 class="text-lg font-semibold mb-3">⭐ Popular</h2>
+            <div id="popular-list" class="grid grid-cols-3 gap-3"></div>
+        </section>
+
+        <!-- Ad Banner After Popular (PropellerAds Banner) -->
+        <div class="ad-banner mb-4 p-3 text-center">
+            <p class="text-xs text-gray-400">📺 Stream Unlimited Content</p>
+            <p class="text-[10px] text-gray-500 mt-1">Sponsored • PropellerAds</p>
+        </div>
+
+        <!-- SmartLink CTA Button -->
+        <div class="mb-4">
+            <a href="#" id="smartlink-cta" onclick="handleSmartLink(event)" class="smartlink-btn block w-full py-3 rounded-xl text-center font-semibold text-black">
+                🎁 Claim Your Free Premium Access
+            </a>
+            <p class="text-[10px] text-gray-500 text-center mt-1">Sponsored Link</p>
+        </div>
+
+        <!-- Top Rated Section -->
+        <section id="toprated-section" class="mb-4">
+            <h2 class="text-lg font-semibold mb-3">🏆 Top Rated</h2>
+            <div id="toprated-list" class="grid grid-cols-3 gap-3"></div>
+        </section>
+
+        <!-- Ad Banner After Top Rated (Adsterra Banner) -->
+        <div class="ad-banner ad-banner-large mb-4 p-4 text-center flex flex-col justify-center">
+            <p class="text-sm font-medium text-purple-300">🌟 Exclusive Offers</p>
+            <p class="text-xs text-gray-400 mt-1">Limited Time Deals</p>
+            <p class="text-[10px] text-gray-500 mt-2">Ad • Adsterra</p>
+        </div>
+
+        <!-- Coming Soon Section -->
+        <section id="upcoming-section" class="mb-4">
+            <h2 class="text-lg font-semibold mb-3">🎬 Coming Soon</h2>
+            <div id="upcoming-list" class="grid grid-cols-3 gap-3"></div>
+        </section>
+
+        <!-- Final Ad Banner -->
+        <div class="ad-banner p-3 text-center">
+            <p class="text-xs text-gray-400">🎬 More Movies & Shows</p>
+            <p class="text-[10px] text-gray-500 mt-1">Advertisement</p>
+        </div>
+    </main>
+
+    <!-- Search Modal -->
+    <div id="search-modal" class="modal hide fixed inset-0 z-50 bg-black/95">
+        <div class="p-4">
+            <div class="flex items-center gap-3 mb-4">
+                <button onclick="closeSearch()" class="p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <input id="search-input" type="text" placeholder="Search movies, series, anime..." 
+                    class="search-input flex-1 bg-white/10 rounded-xl px-4 py-3 outline-none text-white placeholder-gray-400">
+            </div>
+            <!-- Ad in Search -->
+            <div class="ad-banner mb-4 p-2 text-center text-xs text-gray-400">Sponsored Results</div>
+            <div id="search-results" class="grid grid-cols-3 gap-3"></div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="modal hide fixed inset-0 z-50 bg-black overflow-y-auto">
+        <div id="detail-content"></div>
+    </div>
+
+    <!-- Player Page -->
+    <div id="player-page" class="modal hide fixed inset-0 z-50 bg-[#0f0f0f] overflow-y-auto">
+        <div class="sticky top-0 z-10 glass border-b border-white/10">
+            <div class="flex items-center justify-between p-3">
+                <button onclick="closePlayer()" class="p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h3 id="player-title" class="text-sm font-medium truncate flex-1 mx-3 text-center"></h3>
+                <button onclick="toggleFullscreen()" class="p-2" title="Fullscreen">
+                    <svg id="fullscreen-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                    </svg>
+                </button>
+                <button onclick="openInNewTab()" class="p-2" title="Open in new tab">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="source-buttons" class="flex gap-2 px-3 pb-3 overflow-x-auto"></div>
+        </div>
+        
+        <div class="player-container bg-black relative">
+            <div id="player-loading" class="absolute inset-0 flex items-center justify-center bg-black z-10">
+                <div class="text-center">
+                    <div class="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <p class="mt-2 text-xs text-gray-400">Loading...</p>
+                </div>
+            </div>
+            <div id="player-error" class="hidden absolute inset-0 flex items-center justify-center bg-black z-10">
+                <div class="text-center p-4">
+                    <div class="text-4xl mb-2">😕</div>
+                    <p class="text-sm text-gray-400 mb-3">Source not available</p>
+                    <button onclick="tryNextSource()" class="px-4 py-2 bg-purple-600 rounded-lg text-xs font-medium">Try Next</button>
+                </div>
+            </div>
+            <iframe id="player-frame" class="player-iframe" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" scrolling="no"></iframe>
+        </div>
+        
+        <div class="p-4">
+            <!-- Ad After Player -->
+            <div class="ad-banner mb-4 p-3 text-center">
+                <p class="text-xs text-gray-400">🎬 Continue Watching Ad-Free</p>
+                <p class="text-[10px] text-gray-500 mt-1">PropellerAds</p>
+            </div>
+
+            <!-- Telegram Download -->
+            <div id="telegram-download" class="mb-4">
+                <button onclick="searchTelegramDownload()" class="w-full telegram-btn py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.324-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.015 3.333-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.142.121.1.154.234.169.359.015.124.034.398.019.612z"/>
+                    </svg>
+                    Download from Telegram
+                </button>
+                <p class="text-xs text-gray-500 text-center mt-2">Search for direct download files on Telegram</p>
+            </div>
+            
+            <!-- Episode Selector -->
+            <div id="player-episodes" class="mb-4 hidden">
+                <h4 class="text-sm font-semibold mb-2">Episodes</h4>
+                <div class="flex gap-2 overflow-x-auto pb-2 mb-2" id="player-seasons"></div>
+                <div class="grid grid-cols-6 gap-2" id="player-episode-list"></div>
+            </div>
+            
+            <!-- Ad Banner -->
+            <div class="ad-banner mb-4 p-3 text-center">
+                <p class="text-xs text-gray-400">Sponsored Content</p>
+                <p class="text-[10px] text-gray-500 mt-1">Adsterra</p>
+            </div>
+
+            <!-- SmartLink in Player -->
+            <div class="mb-4">
+                <a href="#" onclick="handleSmartLink(event)" class="smartlink-btn block w-full py-3 rounded-xl text-center font-semibold text-black text-sm">
+                    🔥 Get Premium Downloads
+                </a>
+            </div>
+            
+            <!-- Related Content -->
+            <div id="related-section" class="mb-4">
+                <h4 class="text-sm font-semibold mb-3">You May Also Like</h4>
+                <div id="related-list" class="grid grid-cols-3 gap-3"></div>
+            </div>
+
+            <!-- Final Ad -->
+            <div class="ad-banner p-3 text-center">
+                <p class="text-xs text-gray-400">More Entertainment</p>
+                <p class="text-[10px] text-gray-500 mt-1">Advertisement</p>
+            </div>
+        </div>
+        
+        <div class="h-20"></div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav fixed bottom-0 left-0 right-0 glass border-t border-white/10 z-40">
+        <div class="flex justify-around py-2">
+            <button onclick="goHome()" class="nav-item active flex flex-col items-center p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span class="text-xs mt-1">Home</span>
+            </button>
+            <button onclick="showGenres()" class="nav-item flex flex-col items-center p-2 text-gray-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                </svg>
+                <span class="text-xs mt-1">Genres</span>
+            </button>
+            <button onclick="showFavorites()" class="nav-item flex flex-col items-center p-2 text-gray-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+                <span class="text-xs mt-1">Favorites</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Genres Modal -->
+    <div id="genres-modal" class="modal hide fixed inset-0 z-50 bg-black/95 overflow-y-auto">
+        <div class="p-4">
+            <div class="flex items-center gap-3 mb-4">
+                <button onclick="closeGenres()" class="p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h2 class="text-xl font-bold">Genres</h2>
+            </div>
+            <!-- Ad in Genres -->
+            <div class="ad-banner mb-4 p-2 text-center text-xs text-gray-400">Browse by Genre • Sponsored</div>
+            <div id="genres-list" class="grid grid-cols-2 gap-3"></div>
+            <!-- Ad After Genres -->
+            <div class="ad-banner mt-4 p-3 text-center text-xs text-gray-400">More Categories Coming Soon • Ad</div>
+        </div>
+    </div>
+
+    <!-- Favorites Modal -->
+    <div id="favorites-modal" class="modal hide fixed inset-0 z-50 bg-black/95 overflow-y-auto">
+        <div class="p-4">
+            <div class="flex items-center gap-3 mb-4">
+                <button onclick="closeFavorites()" class="p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h2 class="text-xl font-bold">My Favorites</h2>
+            </div>
+            <!-- Ad in Favorites -->
+            <div class="ad-banner mb-4 p-2 text-center text-xs text-gray-400">Your Watchlist • Ad</div>
+            <div id="favorites-list" class="grid grid-cols-3 gap-3"></div>
+            <!-- Ad After Favorites -->
+            <div class="ad-banner mt-4 p-3 text-center text-xs text-gray-400">Save More Movies • Sponsored</div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- PROPELLERADS - Vignette Banner Script -->
+    <!-- ============================================ -->
+    <script>
+        // PropellerAds Vignette Banner
+        // (function(s,u,z,p){s.src=u;s.setAttribute('data-zone',z);p.appendChild(s);})(document.createElement('script'),'//voyager.outcomewithshe.com/v.js','YOUR_VIGNETTE_ZONE_ID',document.body||document.documentElement);
+    </script>
+
+    <!-- ============================================ -->
+    <!-- ADSTERRA - Native Banner Script -->
+    <!-- ============================================ -->
+    <script>
+        // Adsterra Native Banner
+        // (function(d,z,s){s.src='https://'+d+'/native/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('www.profitabledisplaynetwork.com','YOUR_ADSTERRA_NATIVE_ID',document.createElement('script'));
+    </script>
+
+    <!-- ============================================ -->
+    <!-- SMARTLINK HANDLER -->
+    <!-- Replace with your actual SmartLink URLs -->
+    <!-- ============================================ -->
+    <script>
+        // SmartLink URLs - Replace with your actual links
+        const PROPELLER_SMARTLINK = 'https://your-propeller-smartlink.com';
+        const ADSTERRA_SMARTLINK = 'https://your-adsterra-smartlink.com';
+        
+        function handleSmartLink(e) {
+            e.preventDefault();
+            // Randomly choose between PropellerAds and Adsterra SmartLinks
+            const links = [PROPELLER_SMARTLINK, ADSTERRA_SMARTLINK];
+            const randomLink = links[Math.floor(Math.random() * links.length)];
+            window.open(randomLink, '_blank');
+        }
+    </script>
+
+    <script>
+        // Telegram WebApp Init
+        if (window.Telegram && window.Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+            Telegram.WebApp.setHeaderColor('#0f0f0f');
+            Telegram.WebApp.setBackgroundColor('#0f0f0f');
+            
+            // Re-check access after Telegram SDK is ready
+            if (window.checkTelegramAccess) {
+                window.checkTelegramAccess();
+            }
+            
+            // Handle back button
+            Telegram.WebApp.BackButton.onClick(() => {
+                const playerPage = document.getElementById('player-page');
+                const detailModal = document.getElementById('detail-modal');
+                const searchModal = document.getElementById('search-modal');
+                const genresModal = document.getElementById('genres-modal');
+                const favoritesModal = document.getElementById('favorites-modal');
+                
+                if (playerPage.classList.contains('show')) {
+                    closePlayer();
+                } else if (detailModal.classList.contains('show')) {
+                    closeDetail();
+                } else if (searchModal.classList.contains('show')) {
+                    closeSearch();
+                } else if (genresModal.classList.contains('show')) {
+                    closeGenres();
+                } else if (favoritesModal.classList.contains('show')) {
+                    closeFavorites();
+                } else {
+                    Telegram.WebApp.close();
+                }
+            });
+            
+            // Show back button when modals are open
+            function updateBackButton() {
+                const anyModalOpen = document.querySelector('.modal.show');
+                if (anyModalOpen) {
+                    Telegram.WebApp.BackButton.show();
+                } else {
+                    Telegram.WebApp.BackButton.hide();
+                }
+            }
+            
+            // Observe modal changes
+            const modalObserver = new MutationObserver(updateBackButton);
+            document.querySelectorAll('.modal').forEach(modal => {
+                modalObserver.observe(modal, { attributes: true, attributeFilter: ['class'] });
+            });
+        }
+
+        // TMDB API
+        const API_KEY = '3fd2be6f0c70a2a598f084ddfb75487c';
+        const BASE_URL = 'https://api.themoviedb.org/3';
+        const IMG_URL = 'https://image.tmdb.org/t/p/w500';
+        const IMG_ORIGINAL = 'https://image.tmdb.org/t/p/original';
+
+        let currentCategory = 'movie';
+        let currentItem = null;
+        let currentSourceIndex = 0;
+        let currentStreamUrl = '';
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        let searchTimeout = null;
+        let playerSeasons = [];
+
+        // Streaming Sources
+        const streamingSources = [
+            { name: '2embed', getUrl: (id, imdb, type, s, e) => type === 'tv' ? `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` : `https://www.2embed.cc/embed/${id}` },
+            { name: 'VidSrc', getUrl: (id, imdb, type, s, e) => type === 'tv' ? `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` : `https://vidsrc.icu/embed/movie/${id}` },
+            { name: 'VidSrc2', getUrl: (id, imdb, type, s, e) => type === 'tv' ? `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}` : `https://vidsrc.cc/v2/embed/movie/${id}` },
+            { name: 'Smashy', getUrl: (id, imdb, type, s, e) => type === 'tv' ? `https://player.smashy.stream/tv/${id}?s=${s}&e=${e}` : `https://player.smashy.stream/movie/${id}` },
+            { name: 'Auto', getUrl: (id, imdb, type, s, e) => type === 'tv' ? `https://player.autoembed.cc/embed/tv/${id}/${s}/${e}` : `https://player.autoembed.cc/embed/movie/${id}` },
+            { name: 'Nonton', getUrl: (id, imdb, type, s, e) => type === 'tv' ? `https://www.nontongo.win/embed/tv/${id}/${s}/${e}` : `https://www.nontongo.win/embed/movie/${id}` },
+            { name: 'Embed', getUrl: (id, imdb, type, s, e) => type === 'tv' ? `https://embed.su/embed/tv/${id}/${s}/${e}` : `https://embed.su/embed/movie/${id}` }
+        ];
+
+        // Genres
+        const genres = {
+            movie: [
+                {id: 28, name: 'Action', icon: '💥'}, {id: 12, name: 'Adventure', icon: '🗺️'},
+                {id: 16, name: 'Animation', icon: '🎬'}, {id: 35, name: 'Comedy', icon: '😂'},
+                {id: 80, name: 'Crime', icon: '🔪'}, {id: 99, name: 'Documentary', icon: '📹'},
+                {id: 18, name: 'Drama', icon: '🎭'}, {id: 10751, name: 'Family', icon: '👨‍👩‍👧'},
+                {id: 14, name: 'Fantasy', icon: '🧙'}, {id: 36, name: 'History', icon: '📜'},
+                {id: 27, name: 'Horror', icon: '👻'}, {id: 10402, name: 'Music', icon: '🎵'},
+                {id: 9648, name: 'Mystery', icon: '🔍'}, {id: 10749, name: 'Romance', icon: '💕'},
+                {id: 878, name: 'Sci-Fi', icon: '🚀'}, {id: 53, name: 'Thriller', icon: '😱'},
+                {id: 10752, name: 'War', icon: '⚔️'}, {id: 37, name: 'Western', icon: '🤠'}
+            ],
+            tv: [
+                {id: 10759, name: 'Action & Adventure', icon: '💥'}, {id: 16, name: 'Animation', icon: '🎬'},
+                {id: 35, name: 'Comedy', icon: '😂'}, {id: 80, name: 'Crime', icon: '🔪'},
+                {id: 99, name: 'Documentary', icon: '📹'}, {id: 18, name: 'Drama', icon: '🎭'},
+                {id: 10751, name: 'Family', icon: '👨‍👩‍👧'}, {id: 10762, name: 'Kids', icon: '👶'},
+                {id: 9648, name: 'Mystery', icon: '🔍'}, {id: 10763, name: 'News', icon: '📰'},
+                {id: 10764, name: 'Reality', icon: '📺'}, {id: 10765, name: 'Sci-Fi & Fantasy', icon: '🚀'},
+                {id: 10766, name: 'Soap', icon: '🧼'}, {id: 10767, name: 'Talk', icon: '🎤'},
+                {id: 10768, name: 'War & Politics', icon: '⚔️'}, {id: 37, name: 'Western', icon: '🤠'}
+            ]
+        };
+
+        function initSourceButtons() {
+            document.getElementById('source-buttons').innerHTML = streamingSources.map((s, i) => 
+                `<button onclick="switchSource(${i})" class="source-btn ${i === 0 ? 'active' : 'bg-white/10'} px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap">${s.name}</button>`
+            ).join('');
+        }
+
+        function createSkeleton(count, isHorizontal = false) {
+            return Array(count).fill(`<div class="shimmer rounded-xl ${isHorizontal ? 'w-32 h-48 flex-shrink-0' : 'aspect-[2/3]'}"></div>`).join('');
+        }
+
+        async function fetchTMDB(endpoint) {
+            try {
+                const sep = endpoint.includes('?') ? '&' : '?';
+                const res = await fetch(`${BASE_URL}${endpoint}${sep}api_key=${API_KEY}`);
+                return await res.json();
+            } catch (e) { return { results: [] }; }
+        }
+
+        function createCard(item, type = currentCategory) {
+            const title = item.title || item.name;
+            const poster = item.poster_path ? IMG_URL + item.poster_path : 'https://via.placeholder.com/200x300/1a1a1a/666?text=No+Image';
+            const rating = item.vote_average?.toFixed(1) || 'N/A';
+            const year = (item.release_date || item.first_air_date || '').split('-')[0];
+            return `
+                <div class="card-hover cursor-pointer fade-in" onclick="showDetail(${item.id}, '${type}')">
+                    <div class="relative rounded-xl overflow-hidden bg-white/5">
+                        <img src="${poster}" alt="${title}" class="poster-img w-full" loading="lazy" onerror="this.src='https://via.placeholder.com/200x300/1a1a1a/666?text=No+Image'">
+                        <div class="absolute top-2 right-2 bg-black/70 px-1.5 py-0.5 rounded text-xs font-medium flex items-center gap-1">
+                            <span class="text-yellow-400">★</span> ${rating}
+                        </div>
+                    </div>
+                    <h3 class="mt-2 text-xs font-medium line-clamp-2">${title}</h3>
+                    <p class="text-xs text-gray-400">${year}</p>
+                </div>
+            `;
+        }
+
+        function createHorizontalCard(item, type = currentCategory) {
+            const title = item.title || item.name;
+            const poster = item.poster_path ? IMG_URL + item.poster_path : 'https://via.placeholder.com/200x300/1a1a1a/666?text=No+Image';
+            const rating = item.vote_average?.toFixed(1) || 'N/A';
+            return `
+                <div class="flex-shrink-0 w-32 card-hover cursor-pointer fade-in" onclick="showDetail(${item.id}, '${type}')">
+                    <div class="relative rounded-xl overflow-hidden bg-white/5">
+                        <img src="${poster}" alt="${title}" class="poster-img w-full" loading="lazy">
+                        <div class="absolute top-2 right-2 bg-black/70 px-1.5 py-0.5 rounded text-xs font-medium flex items-center gap-1">
+                            <span class="text-yellow-400">★</span> ${rating}
+                        </div>
+                    </div>
+                    <h3 class="mt-2 text-xs font-medium line-clamp-2">${title}</h3>
+                </div>
+            `;
+        }
+
+        async function loadContent() {
+            const type = currentCategory === 'anime' ? 'tv' : currentCategory;
+            const trendingEl = document.getElementById('trending-list');
+            const popularEl = document.getElementById('popular-list');
+            const topratedEl = document.getElementById('toprated-list');
+            const upcomingEl = document.getElementById('upcoming-list');
+
+            trendingEl.innerHTML = createSkeleton(5, true);
+            popularEl.innerHTML = createSkeleton(6);
+            topratedEl.innerHTML = createSkeleton(6);
+            upcomingEl.innerHTML = createSkeleton(6);
+
+            let endpoints = {
+                trending: `/trending/${type}/week`,
+                popular: `/${type}/popular`,
+                toprated: `/${type}/top_rated`,
+                upcoming: type === 'movie' ? '/movie/upcoming' : '/tv/on_the_air'
+            };
+
+            if (currentCategory === 'anime') {
+                endpoints.popular = `/discover/tv?with_genres=16&with_original_language=ja`;
+                endpoints.toprated = `/discover/tv?with_genres=16&with_original_language=ja&sort_by=vote_average.desc&vote_count.gte=100`;
+                endpoints.upcoming = `/discover/tv?with_genres=16&with_original_language=ja&sort_by=first_air_date.desc`;
+            }
+
+            const [trending, popular, toprated, upcoming] = await Promise.all([
+                fetchTMDB(endpoints.trending),
+                fetchTMDB(endpoints.popular),
+                fetchTMDB(endpoints.toprated),
+                fetchTMDB(endpoints.upcoming)
+            ]);
+
+            trendingEl.innerHTML = trending.results?.slice(0, 10).map(i => createHorizontalCard(i, type)).join('') || '';
+            popularEl.innerHTML = popular.results?.slice(0, 12).map(i => createCard(i, type)).join('') || '';
+            topratedEl.innerHTML = toprated.results?.slice(0, 12).map(i => createCard(i, type)).join('') || '';
+            upcomingEl.innerHTML = upcoming.results?.slice(0, 6).map(i => createCard(i, type)).join('') || '';
+        }
+
+        function switchCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.toggle('bg-purple-600', btn.dataset.cat === cat);
+                btn.classList.toggle('bg-white/10', btn.dataset.cat !== cat);
+            });
+            loadContent();
+        }
+
+        async function showDetail(id, type) {
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('detail-content');
+            
+            content.innerHTML = '<div class="flex items-center justify-center h-screen"><div class="shimmer w-16 h-16 rounded-full"></div></div>';
+            modal.classList.remove('hide');
+            modal.classList.add('show');
+
+            const [data, credits, externalIds] = await Promise.all([
+                fetchTMDB(`/${type}/${id}`),
+                fetchTMDB(`/${type}/${id}/credits`),
+                fetchTMDB(`/${type}/${id}/external_ids`)
+            ]);
+            
+            currentItem = { ...data, type, imdb_id: externalIds.imdb_id };
+            playerSeasons = data.seasons || [];
+            
+            const isFav = favorites.some(f => f.id === id);
+            const backdrop = data.backdrop_path ? IMG_ORIGINAL + data.backdrop_path : '';
+            const poster = data.poster_path ? IMG_URL + data.poster_path : 'https://via.placeholder.com/200x300/1a1a1a/666?text=No+Image';
+            const title = data.title || data.name;
+            const year = (data.release_date || data.first_air_date || '').split('-')[0];
+            const runtime = data.runtime || data.episode_run_time?.[0] || 0;
+            const genresList = data.genres?.map(g => g.name).join(', ') || '';
+            const cast = credits.cast?.slice(0, 5).map(c => c.name).join(', ') || '';
+
+            let episodesHTML = '';
+            if (type === 'tv' && data.seasons) {
+                episodesHTML = `
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold mb-3">Seasons & Episodes</h3>
+                        <div class="flex gap-2 overflow-x-auto pb-2 mb-3">
+                            ${data.seasons.filter(s => s.season_number > 0).map((s, i) => `
+                                <button onclick="selectSeason(${s.season_number}, ${s.episode_count})" 
+                                    class="season-btn px-4 py-2 rounded-lg text-sm whitespace-nowrap ${i === 0 ? 'bg-purple-600' : 'bg-white/10'}" 
+                                    data-season="${s.season_number}">S${s.season_number}</button>
+                            `).join('')}
+                        </div>
+                        <div id="episodes-list" class="grid grid-cols-5 gap-2"></div>
+                    </div>
+                `;
+            }
+
+            content.innerHTML = `
+                <div class="relative">
+                    ${backdrop ? `<img src="${backdrop}" class="w-full h-64 object-cover">` : '<div class="w-full h-64 bg-gradient-to-b from-purple-900/30 to-transparent"></div>'}
+                    <div class="hero-gradient absolute inset-0"></div>
+                    <button onclick="closeDetail()" class="absolute top-4 left-4 p-2 rounded-full bg-black/50">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <button onclick="toggleFavorite(${id}, '${type}')" class="absolute top-4 right-4 p-2 rounded-full bg-black/50">
+                        <svg class="w-6 h-6 ${isFav ? 'fill-red-500 stroke-red-500' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    </button>
+                </div>
+                <div class="px-4 -mt-20 relative z-10">
+                    <div class="flex gap-4">
+                        <img src="${poster}" class="w-28 h-42 rounded-xl object-cover shadow-lg">
+                        <div class="flex-1 pt-12">
+                            <h1 class="text-xl font-bold">${title}</h1>
+                            <div class="flex items-center gap-2 mt-2 text-sm text-gray-400">
+                                <span>${year}</span>
+                                ${runtime ? `<span>• ${runtime} min</span>` : ''}
+                                <span class="flex items-center gap-1"><span class="text-yellow-400">★</span> ${data.vote_average?.toFixed(1) || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-2 mt-4">
+                        <button onclick="playContent()" class="flex-1 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            ${type === 'tv' ? 'Play S1 E1' : 'Play Now'}
+                        </button>
+                        <button onclick="searchTelegramDownload()" class="px-4 py-3 rounded-xl font-semibold text-white telegram-btn">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.324-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.015 3.333-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.142.121.1.154.234.169.359.015.124.034.398.019.612z"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Ad Banner in Detail -->
+                    <div class="ad-banner mt-4 p-3 text-center">
+                        <p class="text-xs text-gray-400">🎬 Stream in HD Quality</p>
+                        <p class="text-[10px] text-gray-500 mt-1">Sponsored</p>
+                    </div>
+
+                    <div class="mt-4">
+                        <p class="text-sm text-gray-300 leading-relaxed">${data.overview || 'No description available.'}</p>
+                    </div>
+
+                    <div class="mt-4 text-sm">
+                        <p class="text-gray-400"><span class="text-white">Genres:</span> ${genresList}</p>
+                        ${cast ? `<p class="text-gray-400 mt-1"><span class="text-white">Cast:</span> ${cast}</p>` : ''}
+                    </div>
+
+                    ${episodesHTML}
+
+                    <!-- SmartLink in Detail -->
+                    <div class="mt-4">
+                        <a href="#" onclick="handleSmartLink(event)" class="smartlink-btn block w-full py-3 rounded-xl text-center font-semibold text-black text-sm">
+                            ⚡ Unlock Premium Features
+                        </a>
+                    </div>
+
+                    <!-- Final Ad -->
+                    <div class="ad-banner mt-4 p-3 text-center">
+                        <p class="text-xs text-gray-400">More Movies Available</p>
+                        <p class="text-[10px] text-gray-500 mt-1">Ad</p>
+                    </div>
+
+                    <div class="h-20"></div>
+                </div>
+            `;
+
+            if (type === 'tv' && data.seasons?.length > 0) {
+                const firstSeason = data.seasons.find(s => s.season_number > 0);
+                if (firstSeason) selectSeason(firstSeason.season_number, firstSeason.episode_count);
+            }
+        }
+
+        let selectedSeason = 1;
+        let selectedEpisode = 1;
+
+        function selectSeason(season, episodeCount) {
+            selectedSeason = season;
+            selectedEpisode = 1;
+            document.querySelectorAll('.season-btn').forEach(btn => {
+                btn.classList.toggle('bg-purple-600', btn.dataset.season == season);
+                btn.classList.toggle('bg-white/10', btn.dataset.season != season);
+            });
+            const list = document.getElementById('episodes-list');
+            if (list) {
+                list.innerHTML = Array.from({length: episodeCount}, (_, i) => 
+                    `<button onclick="selectEpisode(${i+1})" class="episode-btn p-2 rounded-lg text-sm ${i === 0 ? 'bg-purple-600' : 'bg-white/10'}" data-ep="${i+1}">${i+1}</button>`
+                ).join('');
+            }
+        }
+
+        function selectEpisode(ep) {
+            selectedEpisode = ep;
+            document.querySelectorAll('.episode-btn').forEach(btn => {
+                btn.classList.toggle('bg-purple-600', btn.dataset.ep == ep);
+                btn.classList.toggle('bg-white/10', btn.dataset.ep != ep);
+            });
+        }
+
+        function selectPlayerEpisode(ep) {
+            selectedEpisode = ep;
+            document.querySelectorAll('.player-ep-btn').forEach(btn => {
+                btn.classList.toggle('bg-purple-600', btn.dataset.ep == ep);
+                btn.classList.toggle('bg-white/10', btn.dataset.ep != ep);
+            });
+            document.getElementById('player-title').textContent = `${currentItem.title || currentItem.name} - S${selectedSeason} E${selectedEpisode}`;
+            switchSource(currentSourceIndex);
+        }
+
+        function selectPlayerSeason(season, episodeCount) {
+            selectedSeason = season;
+            selectedEpisode = 1;
+            document.querySelectorAll('.player-season-btn').forEach(btn => {
+                btn.classList.toggle('bg-purple-600', btn.dataset.season == season);
+                btn.classList.toggle('bg-white/10', btn.dataset.season != season);
+            });
+            document.getElementById('player-episode-list').innerHTML = Array.from({length: episodeCount}, (_, i) => 
+                `<button onclick="selectPlayerEpisode(${i+1})" class="player-ep-btn p-2 rounded-lg text-sm ${i === 0 ? 'bg-purple-600' : 'bg-white/10'}" data-ep="${i+1}">${i+1}</button>`
+            ).join('');
+            document.getElementById('player-title').textContent = `${currentItem.title || currentItem.name} - S${selectedSeason} E${selectedEpisode}`;
+            switchSource(currentSourceIndex);
+        }
+
+        async function playContent() {
+            if (!currentItem) return;
+            initSourceButtons();
+            
+            const page = document.getElementById('player-page');
+            document.getElementById('player-title').textContent = currentItem.type === 'tv' 
+                ? `${currentItem.title || currentItem.name} - S${selectedSeason} E${selectedEpisode}` 
+                : currentItem.title || currentItem.name;
+            
+            const episodesSection = document.getElementById('player-episodes');
+            if (currentItem.type === 'tv' && playerSeasons.length > 0) {
+                episodesSection.classList.remove('hidden');
+                document.getElementById('player-seasons').innerHTML = playerSeasons.filter(s => s.season_number > 0).map(s => 
+                    `<button onclick="selectPlayerSeason(${s.season_number}, ${s.episode_count})" class="player-season-btn px-3 py-1.5 rounded-lg text-xs whitespace-nowrap ${s.season_number === selectedSeason ? 'bg-purple-600' : 'bg-white/10'}" data-season="${s.season_number}">S${s.season_number}</button>`
+                ).join('');
+                const currentSeasonData = playerSeasons.find(s => s.season_number === selectedSeason);
+                document.getElementById('player-episode-list').innerHTML = Array.from({length: currentSeasonData?.episode_count || 1}, (_, i) => 
+                    `<button onclick="selectPlayerEpisode(${i+1})" class="player-ep-btn p-2 rounded-lg text-sm ${i+1 === selectedEpisode ? 'bg-purple-600' : 'bg-white/10'}" data-ep="${i+1}">${i+1}</button>`
+                ).join('');
+            } else {
+                episodesSection.classList.add('hidden');
+            }
+            
+            loadRelatedContent();
+            page.classList.remove('hide');
+            page.classList.add('show');
+            switchSource(0);
+        }
+
+        async function loadRelatedContent() {
+            const list = document.getElementById('related-list');
+            list.innerHTML = createSkeleton(6);
+            const data = await fetchTMDB(`/${currentItem.type}/${currentItem.id}/recommendations`);
+            if (data.results?.length > 0) {
+                list.innerHTML = data.results.slice(0, 6).map(i => createCard(i, currentItem.type)).join('');
+            } else {
+                const similar = await fetchTMDB(`/${currentItem.type}/${currentItem.id}/similar`);
+                list.innerHTML = similar.results?.length > 0 
+                    ? similar.results.slice(0, 6).map(i => createCard(i, currentItem.type)).join('')
+                    : '<p class="col-span-3 text-center text-gray-400 text-sm">No recommendations</p>';
+            }
+        }
+
+        function searchTelegramDownload() {
+            if (!currentItem) return;
+            const title = currentItem.title || currentItem.name;
+            const year = (currentItem.release_date || currentItem.first_air_date || '').split('-')[0];
+            window.open(`https://www.google.com/search?q=site:t.me+${encodeURIComponent(title + ' ' + year)}+download`, '_blank');
+        }
+
+        function openInNewTab() { if (currentStreamUrl) window.open(currentStreamUrl, '_blank'); }
+        
+        function toggleFullscreen() {
+            const playerContainer = document.querySelector('.player-container');
+            const iframe = document.getElementById('player-frame');
+            
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement) {
+                // Enter fullscreen - try iframe first, then container
+                if (iframe.requestFullscreen) {
+                    iframe.requestFullscreen().catch(() => {
+                        // If iframe fails, try container
+                        if (playerContainer.requestFullscreen) {
+                            playerContainer.requestFullscreen();
+                        }
+                    });
+                } else if (iframe.webkitRequestFullscreen) {
+                    iframe.webkitRequestFullscreen();
+                } else if (iframe.mozRequestFullScreen) {
+                    iframe.mozRequestFullScreen();
+                } else if (playerContainer.requestFullscreen) {
+                    playerContainer.requestFullscreen();
+                }
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                }
+            }
+        }
+        
+        // Listen for fullscreen changes to update icon
+        document.addEventListener('fullscreenchange', updateFullscreenIcon);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+        document.addEventListener('mozfullscreenchange', updateFullscreenIcon);
+        
+        function updateFullscreenIcon() {
+            const icon = document.getElementById('fullscreen-icon');
+            if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement) {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9L4 4m0 0v4m0-4h4m7 5l5-5m0 0v4m0-4h-4M9 15l-5 5m0 0v-4m0 4h4m7-5l5 5m0 0v-4m0 4h-4"/>';
+            } else {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>';
+            }
+        }
+        function tryNextSource() { switchSource((currentSourceIndex + 1) % streamingSources.length); }
+
+        function switchSource(index) {
+            currentSourceIndex = index;
+            const frame = document.getElementById('player-frame');
+            const loading = document.getElementById('player-loading');
+            const error = document.getElementById('player-error');
+            
+            document.querySelectorAll('.source-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+                btn.classList.toggle('bg-white/10', i !== index);
+            });
+
+            loading.classList.remove('hidden');
+            error.classList.add('hidden');
+            frame.style.opacity = '0';
+            
+            const url = streamingSources[index].getUrl(currentItem.id, currentItem.imdb_id, currentItem.type, selectedSeason, selectedEpisode);
+            currentStreamUrl = url;
+            
+            frame.src = 'about:blank';
+            setTimeout(() => { frame.src = url; }, 100);
+            
+            frame.onload = () => { loading.classList.add('hidden'); frame.style.opacity = '1'; };
+            setTimeout(() => { if (!loading.classList.contains('hidden')) { loading.classList.add('hidden'); frame.style.opacity = '1'; } }, 8000);
+        }
+
+        function closeDetail() { document.getElementById('detail-modal').classList.add('hide'); document.getElementById('detail-modal').classList.remove('show'); }
+        function closePlayer() { document.getElementById('player-page').classList.add('hide'); document.getElementById('player-page').classList.remove('show'); document.getElementById('player-frame').src = 'about:blank'; }
+
+        function openSearch() { document.getElementById('search-modal').classList.remove('hide'); document.getElementById('search-modal').classList.add('show'); document.getElementById('search-input').focus(); }
+        function closeSearch() { document.getElementById('search-modal').classList.add('hide'); document.getElementById('search-modal').classList.remove('show'); document.getElementById('search-input').value = ''; document.getElementById('search-results').innerHTML = ''; }
+
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            if (query.length < 2) { document.getElementById('search-results').innerHTML = ''; return; }
+            searchTimeout = setTimeout(async () => {
+                const data = await fetchTMDB(`/search/multi?query=${encodeURIComponent(query)}`);
+                document.getElementById('search-results').innerHTML = data.results?.filter(r => r.media_type === 'movie' || r.media_type === 'tv').slice(0, 12).map(i => createCard(i, i.media_type)).join('') || '';
+            }, 500);
+        });
+
+        function toggleFavorite(id, type) {
+            const idx = favorites.findIndex(f => f.id === id);
+            if (idx > -1) favorites.splice(idx, 1);
+            else favorites.push({ id, type, ...currentItem });
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            showDetail(id, type);
+        }
+
+        function showFavorites() {
+            const list = document.getElementById('favorites-list');
+            list.innerHTML = favorites.length === 0 
+                ? '<p class="col-span-3 text-center text-gray-400 py-10">No favorites yet</p>'
+                : favorites.map(i => createCard(i, i.type)).join('');
+            document.getElementById('favorites-modal').classList.remove('hide');
+            document.getElementById('favorites-modal').classList.add('show');
+            updateNav('favorites');
+        }
+        function closeFavorites() { document.getElementById('favorites-modal').classList.add('hide'); document.getElementById('favorites-modal').classList.remove('show'); updateNav('home'); }
+
+        function showGenres() {
+            const type = currentCategory === 'anime' ? 'tv' : currentCategory;
+            document.getElementById('genres-list').innerHTML = genres[type].map(g => 
+                `<button onclick="loadGenre(${g.id}, '${g.name}')" class="glass p-4 rounded-xl text-left card-hover"><span class="text-2xl">${g.icon}</span><p class="mt-2 font-medium">${g.name}</p></button>`
+            ).join('');
+            document.getElementById('genres-modal').classList.remove('hide');
+            document.getElementById('genres-modal').classList.add('show');
+            updateNav('genres');
+        }
+        function closeGenres() { document.getElementById('genres-modal').classList.add('hide'); document.getElementById('genres-modal').classList.remove('show'); updateNav('home'); }
+
+        async function loadGenre(genreId, genreName) {
+            closeGenres();
+            const type = currentCategory === 'anime' ? 'tv' : currentCategory;
+            document.getElementById('popular-section').innerHTML = `<h2 class="text-lg font-semibold mb-3">${genreName}</h2><div id="genre-results" class="grid grid-cols-3 gap-3">${createSkeleton(12)}</div>`;
+            document.getElementById('trending-section').style.display = 'none';
+            document.getElementById('toprated-section').style.display = 'none';
+            document.getElementById('upcoming-section').style.display = 'none';
+            const data = await fetchTMDB(`/discover/${type}?with_genres=${genreId}`);
+            document.getElementById('genre-results').innerHTML = data.results?.map(i => createCard(i, type)).join('') || '';
+        }
+
+        function goHome() {
+            document.getElementById('trending-section').style.display = 'block';
+            document.getElementById('toprated-section').style.display = 'block';
+            document.getElementById('upcoming-section').style.display = 'block';
+            closeGenres();
+            closeFavorites();
+            loadContent();
+            updateNav('home');
+        }
+
+        function updateNav(active) {
+            const names = ['home', 'genres', 'favorites'];
+            document.querySelectorAll('.nav-item').forEach((item, i) => {
+                item.classList.toggle('active', names[i] === active);
+                item.classList.toggle('text-gray-400', names[i] !== active);
+            });
+        }
+
+        // Init
+        loadContent();
+    </script>
+</body>
+</html>
