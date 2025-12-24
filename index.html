@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src='//libtl.com/sdk.js' data-zone='10366687' data-sdk='show_10366687'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Streamm - Movies, Series and Anime</title>
@@ -2207,6 +2206,127 @@
             console.log('%c🛡️ Blocking: Popups, Redirects, Trackers, Fingerprinting, WebSockets, Beacons, Service Workers', 'color: #86efac;');
             console.log('%c✅ Allowing: PropellerAds, Adsterra only', 'color: #4ade80;');
             
+            // ========== TELEGRAM SPECIFIC PROTECTIONS ==========
+            const isTelegramEnv = !!(window.Telegram && window.Telegram.WebApp);
+            
+            if (isTelegramEnv) {
+                console.log('%c[Streamm] 📱 TELEGRAM MODE - Extra protections enabled', 'color: #0088cc; font-weight: bold;');
+                
+                // In Telegram, be extra aggressive with touch events
+                document.addEventListener('touchstart', function(e) {
+                    const target = e.target;
+                    
+                    // Block touches on suspicious elements
+                    if (target.tagName === 'A') {
+                        try {
+                            const href = target.href || '';
+                            if (href && !ALLOWED_DOMAINS.some(d => href.includes(d))) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                e.stopImmediatePropagation();
+                                target.remove();
+                                console.log('[Streamm Telegram] Blocked touch on external link');
+                                return false;
+                            }
+                        } catch(err) {}
+                    }
+                    
+                    // Block touches on invisible overlays
+                    if (target.closest('.player-container') && target !== document.getElementById('player-frame')) {
+                        const style = window.getComputedStyle(target);
+                        if (parseFloat(style.opacity) < 0.3 && style.position === 'absolute') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            target.remove();
+                            console.log('[Streamm Telegram] Blocked touch on invisible overlay');
+                            return false;
+                        }
+                    }
+                }, { capture: true, passive: false });
+                
+                // Block all external navigations in Telegram
+                const _origLocationHref = Object.getOwnPropertyDescriptor(window.location, 'href') || 
+                                          Object.getOwnPropertyDescriptor(Location.prototype, 'href');
+                
+                if (_origLocationHref && _origLocationHref.set) {
+                    try {
+                        Object.defineProperty(window.location, 'href', {
+                            get: _origLocationHref.get,
+                            set: function(url) {
+                                if (url) {
+                                    try {
+                                        const hostname = new URL(url, window.location.origin).hostname;
+                                        if (!ALLOWED_DOMAINS.some(d => hostname.includes(d)) && 
+                                            hostname !== window.location.hostname) {
+                                            console.log('[Streamm Telegram] Blocked location.href change:', url);
+                                            return;
+                                        }
+                                    } catch(e) {}
+                                }
+                                _origLocationHref.set.call(this, url);
+                            },
+                            configurable: true
+                        });
+                    } catch(e) {}
+                }
+                
+                // Telegram-specific: Block window.open more aggressively
+                const telegramOpenBlocker = function() { return null; };
+                try {
+                    Object.defineProperty(window, 'open', {
+                        value: telegramOpenBlocker,
+                        writable: false,
+                        configurable: false
+                    });
+                } catch(e) {}
+                
+                // Block Telegram WebView specific methods
+                if (window.TelegramWebviewProxy) {
+                    const _origPostEvent = window.TelegramWebviewProxy.postEvent;
+                    window.TelegramWebviewProxy.postEvent = function(eventType, eventData) {
+                        // Block navigation events from ad scripts
+                        if (eventType === 'web_app_open_link' || eventType === 'web_app_open_tg_link') {
+                            try {
+                                const data = JSON.parse(eventData);
+                                if (data.url && !ALLOWED_DOMAINS.some(d => data.url.includes(d))) {
+                                    console.log('[Streamm Telegram] Blocked Telegram navigation:', data.url);
+                                    return;
+                                }
+                            } catch(e) {}
+                        }
+                        return _origPostEvent.apply(this, arguments);
+                    };
+                }
+                
+                // Continuous cleanup in Telegram - more aggressive
+                setInterval(function() {
+                    // Remove all external links inside player
+                    const playerContainer = document.querySelector('.player-container');
+                    if (playerContainer) {
+                        playerContainer.querySelectorAll('a').forEach(link => {
+                            if (link.href && !ALLOWED_DOMAINS.some(d => link.href.includes(d))) {
+                                link.removeAttribute('href');
+                                link.style.pointerEvents = 'none';
+                                link.onclick = function(e) { e.preventDefault(); return false; };
+                            }
+                        });
+                        
+                        // Remove high z-index overlays more aggressively
+                        playerContainer.querySelectorAll('div').forEach(div => {
+                            if (div.id === 'click-shield' || div.id === 'click-interceptor' || 
+                                div.id === 'player-loading' || div.id === 'player-error' ||
+                                div.id === 'shield-message' || div.closest('#shield-content')) return;
+                            
+                            const style = window.getComputedStyle(div);
+                            const zIndex = parseInt(style.zIndex) || 0;
+                            if (zIndex > 50 && (style.position === 'absolute' || style.position === 'fixed')) {
+                                div.remove();
+                            }
+                        });
+                    }
+                }, 300);
+            }
+            
             // ========== SMART CLICK PROTECTION FOR PLAYER AREA ==========
             // Only blocks suspicious behavior, allows normal player controls
             (function() {
@@ -2605,21 +2725,24 @@
                 </div>
             </div>
             <iframe id="player-frame" class="player-iframe" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" scrolling="no"></iframe>
-            <!-- Smart Click Protection Overlay -->
-            <div id="click-shield" class="absolute inset-0 z-20 cursor-pointer flex items-center justify-center" style="display:flex; background: rgba(0,0,0,0.7);">
+            <!-- Smart Click Protection Overlay - Telegram Enhanced -->
+            <div id="click-shield" class="absolute inset-0 z-20 cursor-pointer flex items-center justify-center" style="display:flex; background: rgba(0,0,0,0.85);">
                 <div id="shield-content" class="text-center p-6 bg-black/90 rounded-2xl border border-purple-500/30 max-w-xs mx-4">
                     <div class="text-5xl mb-3">🛡️</div>
                     <h3 class="text-lg font-bold text-white mb-2">Ad Protection Active</h3>
-                    <p class="text-sm text-gray-300 mb-3">Streaming sites have hidden ads. Click <span id="clicks-remaining" class="text-purple-400 font-bold">3</span> times to unlock the player.</p>
-                    <div class="flex justify-center gap-2 mb-3">
+                    <p class="text-sm text-gray-300 mb-3">Streaming sites have hidden ads. Tap <span id="clicks-remaining" class="text-purple-400 font-bold">5</span> times to unlock the player safely.</p>
+                    <div id="dots-container" class="flex justify-center gap-2 mb-3">
                         <div id="dot-1" class="w-3 h-3 rounded-full bg-gray-600"></div>
                         <div id="dot-2" class="w-3 h-3 rounded-full bg-gray-600"></div>
                         <div id="dot-3" class="w-3 h-3 rounded-full bg-gray-600"></div>
+                        <div id="dot-4" class="w-3 h-3 rounded-full bg-gray-600"></div>
+                        <div id="dot-5" class="w-3 h-3 rounded-full bg-gray-600"></div>
                     </div>
                     <button id="shield-tap-btn" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-semibold text-white">
                         Tap to Unlock Player
                     </button>
                     <p class="text-xs text-gray-500 mt-2">This blocks popup ads from streaming sites</p>
+                    <p id="telegram-notice" class="text-xs text-purple-400 mt-1 hidden">🔒 Enhanced protection for Telegram</p>
                 </div>
             </div>
             
@@ -2632,17 +2755,23 @@
             </div>
         </div>
         
-        <!-- ULTIMATE PLAYER PROTECTION SYSTEM v2.0 -->
+        <!-- ULTIMATE PLAYER PROTECTION SYSTEM v3.0 - TELEGRAM ENHANCED -->
         <script>
             (function() {
                 'use strict';
                 
-                console.log('[Streamm Player Protection v2.0] Initializing MAXIMUM PROTECTION...');
+                console.log('[Streamm Player Protection v3.0] Initializing TELEGRAM ENHANCED PROTECTION...');
+                
+                // ========== DETECT TELEGRAM ==========
+                const isTelegram = !!(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData);
+                console.log('[Streamm] Running in Telegram:', isTelegram);
                 
                 // ========== CONFIGURATION ==========
-                const CLICKS_REQUIRED = 3;
+                // More clicks required in Telegram because ads are more aggressive
+                const CLICKS_REQUIRED = isTelegram ? 5 : 3;
                 const CONTINUOUS_PROTECTION = true;
                 const INTERCEPT_ALL_CLICKS = true;
+                const TELEGRAM_AGGRESSIVE_MODE = isTelegram;
                 
                 // ========== STATE ==========
                 let clickCount = 0;
@@ -2667,11 +2796,25 @@
                 const clicksRemaining = document.getElementById('clicks-remaining');
                 const shieldTapBtn = document.getElementById('shield-tap-btn');
                 const playerFrame = document.getElementById('player-frame');
+                const telegramNotice = document.getElementById('telegram-notice');
                 const dots = [
                     document.getElementById('dot-1'),
                     document.getElementById('dot-2'),
-                    document.getElementById('dot-3')
+                    document.getElementById('dot-3'),
+                    document.getElementById('dot-4'),
+                    document.getElementById('dot-5')
                 ];
+                
+                // Show Telegram notice if in Telegram
+                if (isTelegram && telegramNotice) {
+                    telegramNotice.classList.remove('hidden');
+                }
+                
+                // Hide extra dots if not in Telegram
+                if (!isTelegram) {
+                    if (dots[3]) dots[3].style.display = 'none';
+                    if (dots[4]) dots[4].style.display = 'none';
+                }
                 
                 if (!playerContainer || !clickShield || !playerFrame) {
                     console.log('[Streamm] Player elements not found');
@@ -2770,10 +2913,44 @@
                     interceptorActive = true;
                     if (clickInterceptor) {
                         clickInterceptor.style.display = 'block';
-                        // Set to none so clicks pass through to iframe immediately
-                        clickInterceptor.style.pointerEvents = 'none';
+                        
+                        if (TELEGRAM_AGGRESSIVE_MODE) {
+                            // In Telegram: Use active interception for first few clicks after shield
+                            clickInterceptor.style.pointerEvents = 'auto';
+                            clickInterceptor.style.background = 'transparent';
+                            
+                            let postShieldClicks = 0;
+                            const POST_SHIELD_CLICKS = 3; // Absorb 3 more clicks after shield
+                            
+                            const telegramClickHandler = function(e) {
+                                postShieldClicks++;
+                                
+                                if (postShieldClicks <= POST_SHIELD_CLICKS) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    e.stopImmediatePropagation();
+                                    console.log('[Streamm Telegram] 🛡️ Post-shield click absorbed:', postShieldClicks);
+                                    showBlockedToast();
+                                    return false;
+                                } else {
+                                    // After absorbing clicks, switch to pass-through
+                                    clickInterceptor.style.pointerEvents = 'none';
+                                    clickInterceptor.removeEventListener('click', telegramClickHandler, true);
+                                    clickInterceptor.removeEventListener('touchend', telegramClickHandler, true);
+                                    console.log('[Streamm Telegram] ✅ Player fully unlocked');
+                                }
+                            };
+                            
+                            clickInterceptor.addEventListener('click', telegramClickHandler, true);
+                            clickInterceptor.addEventListener('touchend', telegramClickHandler, true);
+                            
+                            console.log('[Streamm Telegram] 🔒 Post-shield interceptor ACTIVE - absorbing 3 more clicks');
+                        } else {
+                            // In browser: pass-through mode
+                            clickInterceptor.style.pointerEvents = 'none';
+                        }
                     }
-                    console.log('[Streamm] 🔒 Click Interceptor ACTIVATED (pass-through mode)');
+                    console.log('[Streamm] 🔒 Click Interceptor ACTIVATED');
                 }
                 
                 // ========== DEACTIVATE SHIELD ==========
