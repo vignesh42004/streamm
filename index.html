@@ -2920,37 +2920,299 @@
                             clickInterceptor.style.background = 'transparent';
                             
                             let postShieldClicks = 0;
-                            const POST_SHIELD_CLICKS = 3; // Absorb 3 more clicks after shield
+                            const POST_SHIELD_CLICKS = 5; // Absorb 5 more clicks after shield (total 10 clicks)
+                            let lastPostClick = 0;
                             
                             const telegramClickHandler = function(e) {
+                                const now = Date.now();
                                 postShieldClicks++;
+                                
+                                // Always block rapid clicks (< 100ms apart = bot behavior)
+                                if (now - lastPostClick < 100) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    e.stopImmediatePropagation();
+                                    console.log('[Streamm Telegram] 🛡️ Blocked rapid click');
+                                    showBlockedToast();
+                                    return false;
+                                }
+                                lastPostClick = now;
                                 
                                 if (postShieldClicks <= POST_SHIELD_CLICKS) {
                                     e.preventDefault();
                                     e.stopPropagation();
                                     e.stopImmediatePropagation();
-                                    console.log('[Streamm Telegram] 🛡️ Post-shield click absorbed:', postShieldClicks);
+                                    console.log('[Streamm Telegram] 🛡️ Post-shield click absorbed:', postShieldClicks + '/' + POST_SHIELD_CLICKS);
                                     showBlockedToast();
+                                    
+                                    // Update message
+                                    if (shieldMessage) {
+                                        shieldMessage.textContent = `🛡️ ${POST_SHIELD_CLICKS - postShieldClicks} more taps...`;
+                                        shieldMessage.style.opacity = '1';
+                                        setTimeout(() => shieldMessage.style.opacity = '0', 1500);
+                                    }
                                     return false;
                                 } else {
-                                    // After absorbing clicks, switch to pass-through
+                                    // After absorbing clicks, enter PLAYING mode
                                     clickInterceptor.style.pointerEvents = 'none';
                                     clickInterceptor.removeEventListener('click', telegramClickHandler, true);
                                     clickInterceptor.removeEventListener('touchend', telegramClickHandler, true);
-                                    console.log('[Streamm Telegram] ✅ Player fully unlocked');
+                                    console.log('[Streamm Telegram] ✅ Entering PLAYING mode');
+                                    
+                                    // Activate playing mode protection
+                                    activatePlayingMode();
                                 }
                             };
                             
                             clickInterceptor.addEventListener('click', telegramClickHandler, true);
-                            clickInterceptor.addEventListener('touchend', telegramClickHandler, true);
+                            clickInterceptor.addEventListener('touchstart', telegramClickHandler, true);
                             
-                            console.log('[Streamm Telegram] 🔒 Post-shield interceptor ACTIVE - absorbing 3 more clicks');
+                            console.log('[Streamm Telegram] 🔒 Post-shield interceptor ACTIVE - absorbing', POST_SHIELD_CLICKS, 'more clicks');
                         } else {
                             // In browser: pass-through mode
                             clickInterceptor.style.pointerEvents = 'none';
                         }
                     }
                     console.log('[Streamm] 🔒 Click Interceptor ACTIVATED');
+                }
+                
+                // ========== PLAYING MODE - Active during video playback ==========
+                let playingModeActive = false;
+                let playingClicks = 0;
+                let lastPlayingClick = 0;
+                
+                function activatePlayingMode() {
+                    if (playingModeActive) return;
+                    playingModeActive = true;
+                    
+                    console.log('[Streamm] 🎬 PLAYING MODE activated');
+                    
+                    // Monitor all clicks in player area during playback
+                    const playingHandler = function(e) {
+                        const now = Date.now();
+                        const target = e.target;
+                        playingClicks++;
+                        
+                        // Block ultra-rapid clicks (< 50ms = definitely bot)
+                        if (now - lastPlayingClick < 50) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+                            console.log('[Streamm Playing] 🛡️ Blocked ultra-rapid click');
+                            showBlockedToast();
+                            return false;
+                        }
+                        lastPlayingClick = now;
+                        
+                        // Allow iframe clicks (player controls)
+                        if (target.id === 'player-frame' || target.tagName === 'IFRAME') {
+                            return; // Allow normal player controls
+                        }
+                        
+                        // Block external links
+                        if (target.tagName === 'A' || target.closest('a')) {
+                            const link = target.tagName === 'A' ? target : target.closest('a');
+                            if (link.href) {
+                                try {
+                                    const hostname = new URL(link.href, window.location.origin).hostname;
+                                    if (!ALLOWED_DOMAINS.some(d => hostname.includes(d))) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        e.stopImmediatePropagation();
+                                        link.remove();
+                                        console.log('[Streamm Playing] 🛡️ Blocked & removed external link');
+                                        showBlockedToast();
+                                        return false;
+                                    }
+                                } catch(err) {}
+                            }
+                        }
+                        
+                        // Block invisible overlays
+                        if (target.tagName === 'DIV') {
+                            const style = window.getComputedStyle(target);
+                            const opacity = parseFloat(style.opacity);
+                            const zIndex = parseInt(style.zIndex) || 0;
+                            
+                            if (opacity < 0.2 || zIndex > 500) {
+                                if (!target.id.includes('player') && !target.id.includes('shield')) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    e.stopImmediatePropagation();
+                                    target.remove();
+                                    console.log('[Streamm Playing] 🛡️ Blocked & removed overlay');
+                                    showBlockedToast();
+                                    return false;
+                                }
+                            }
+                        }
+                        
+                        // Every 3rd click, run quick cleanup
+                        if (playingClicks % 3 === 0) {
+                            quickCleanup();
+                        }
+                    };
+                    
+                    if (playerContainer) {
+                        playerContainer.addEventListener('click', playingHandler, true);
+                        playerContainer.addEventListener('touchstart', playingHandler, true);
+                    }
+                    
+                    // Start background protection
+                    activateBackgroundProtection();
+                }
+                
+                // Quick cleanup function
+                function quickCleanup() {
+                    if (!playerContainer) return;
+                    
+                    // Remove external links
+                    playerContainer.querySelectorAll('a').forEach(link => {
+                        if (link.href && !ALLOWED_DOMAINS.some(d => link.href.includes(d))) {
+                            link.remove();
+                        }
+                    });
+                    
+                    // Remove high z-index overlays
+                    playerContainer.querySelectorAll('div').forEach(div => {
+                        if (div.id.includes('player') || div.id.includes('shield') || div.id.includes('content')) return;
+                        try {
+                            const style = window.getComputedStyle(div);
+                            const zIndex = parseInt(style.zIndex) || 0;
+                            if (zIndex > 100 && (style.position === 'absolute' || style.position === 'fixed')) {
+                                div.remove();
+                            }
+                        } catch(e) {}
+                    });
+                }
+                
+                // ========== BACKGROUND PROTECTION - Continuous cleanup ==========
+                let bgProtectionActive = false;
+                let bgInterval = null;
+                
+                function activateBackgroundProtection() {
+                    if (bgProtectionActive) return;
+                    bgProtectionActive = true;
+                    
+                    console.log('[Streamm] 🔄 BACKGROUND PROTECTION activated');
+                    
+                    // Run every 150ms for aggressive cleanup
+                    bgInterval = setInterval(function() {
+                        if (!playerContainer) return;
+                        
+                        // 1. Remove ALL external iframes
+                        document.querySelectorAll('iframe').forEach(iframe => {
+                            if (iframe.id === 'player-frame') return;
+                            const src = iframe.src || '';
+                            if (!ALLOWED_DOMAINS.some(d => src.includes(d))) {
+                                iframe.remove();
+                                console.log('[Streamm BG] 🗑️ Removed external iframe');
+                            }
+                        });
+                        
+                        // 2. Remove popup overlays
+                        document.querySelectorAll('div, section').forEach(el => {
+                            if (el.closest('.modal') || el.closest('nav') || el.closest('header')) return;
+                            if (el.id && (el.id.includes('player') || el.id.includes('shield') || el.id.includes('adsterra'))) return;
+                            
+                            try {
+                                const style = window.getComputedStyle(el);
+                                const zIndex = parseInt(style.zIndex) || 0;
+                                if (style.position === 'fixed' && zIndex > 9000) {
+                                    el.remove();
+                                    console.log('[Streamm BG] 🗑️ Removed popup overlay');
+                                }
+                            } catch(e) {}
+                        });
+                        
+                        // 3. Sanitize links in player area
+                        if (playerContainer) {
+                            playerContainer.querySelectorAll('a').forEach(link => {
+                                if (link.href && !ALLOWED_DOMAINS.some(d => link.href.includes(d))) {
+                                    link.removeAttribute('href');
+                                    link.style.pointerEvents = 'none';
+                                    link.onclick = () => false;
+                                }
+                            });
+                        }
+                        
+                        // 4. Remove invisible clickjacking elements
+                        document.querySelectorAll('[style*="opacity"]').forEach(el => {
+                            try {
+                                const opacity = parseFloat(window.getComputedStyle(el).opacity);
+                                if (opacity < 0.05 && el.tagName === 'DIV') {
+                                    const rect = el.getBoundingClientRect();
+                                    if (rect.width > 50 && rect.height > 50) {
+                                        el.remove();
+                                    }
+                                }
+                            } catch(e) {}
+                        });
+                        
+                        // 5. Remove popup scripts
+                        document.querySelectorAll('script').forEach(script => {
+                            const src = script.src || '';
+                            if (src && !ALLOWED_DOMAINS.some(d => src.includes(d))) {
+                                if (/pop|click|redirect|track|ads/i.test(src)) {
+                                    script.remove();
+                                }
+                            }
+                        });
+                        
+                    }, 150);
+                    
+                    // Also use MutationObserver for real-time blocking
+                    const bgObserver = new MutationObserver(function(mutations) {
+                        mutations.forEach(function(mutation) {
+                            mutation.addedNodes.forEach(function(node) {
+                                if (node.nodeType !== 1) return;
+                                
+                                // Block new iframes
+                                if (node.tagName === 'IFRAME' && node.id !== 'player-frame') {
+                                    const src = node.src || '';
+                                    if (!ALLOWED_DOMAINS.some(d => src.includes(d))) {
+                                        node.remove();
+                                        console.log('[Streamm BG Observer] 🛡️ Blocked iframe');
+                                        showBlockedToast();
+                                    }
+                                }
+                                
+                                // Block new scripts
+                                if (node.tagName === 'SCRIPT') {
+                                    const src = node.src || '';
+                                    if (src && !ALLOWED_DOMAINS.some(d => src.includes(d))) {
+                                        if (/ad|pop|track|click/i.test(src)) {
+                                            node.remove();
+                                            console.log('[Streamm BG Observer] 🛡️ Blocked script');
+                                        }
+                                    }
+                                }
+                                
+                                // Block popup divs
+                                if (node.tagName === 'DIV') {
+                                    try {
+                                        const style = window.getComputedStyle(node);
+                                        const zIndex = parseInt(style.zIndex) || 0;
+                                        if (style.position === 'fixed' && zIndex > 9000) {
+                                            node.remove();
+                                            console.log('[Streamm BG Observer] 🛡️ Blocked popup');
+                                            showBlockedToast();
+                                        }
+                                    } catch(e) {}
+                                }
+                                
+                                // Block external links
+                                if (node.tagName === 'A') {
+                                    const href = node.href || '';
+                                    if (href && !ALLOWED_DOMAINS.some(d => href.includes(d))) {
+                                        node.remove();
+                                    }
+                                }
+                            });
+                        });
+                    });
+                    
+                    bgObserver.observe(document.documentElement, { childList: true, subtree: true });
                 }
                 
                 // ========== DEACTIVATE SHIELD ==========
