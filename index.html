@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src='//libtl.com/sdk.js' data-zone='10366687' data-sdk='show_10366687'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Streamm - Movies, Series and Anime</title>
@@ -255,6 +256,57 @@
         iframe:fullscreen, iframe:-webkit-full-screen, iframe:-moz-full-screen {
             width: 100vw !important; height: 100vh !important;
         }
+        /* Manual Fullscreen for Telegram Mini App */
+        .player-container.manual-fullscreen {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
+            z-index: 99999 !important;
+            background: #000 !important;
+        }
+        .player-container.manual-fullscreen .player-iframe {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .player-container.manual-fullscreen #player-loading,
+        .player-container.manual-fullscreen #player-error {
+            z-index: 100000 !important;
+        }
+        /* Click Interceptor - Invisible but active */
+        #click-interceptor {
+            background: transparent;
+            cursor: pointer;
+        }
+        #click-interceptor.pulse-block {
+            animation: pulseBlock 0.3s ease;
+        }
+        @keyframes pulseBlock {
+            0% { background: rgba(139, 92, 246, 0); }
+            50% { background: rgba(139, 92, 246, 0.3); }
+            100% { background: rgba(139, 92, 246, 0); }
+        }
+        /* Blocked notification */
+        .blocked-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 999999;
+            animation: toastIn 0.3s ease;
+            box-shadow: 0 10px 40px rgba(34, 197, 94, 0.4);
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
         /* Vignette Banner Style */
         .vignette-banner { 
             background: linear-gradient(135deg, #2d1b4e 0%, #1a1a3a 50%, #0d2137 100%);
@@ -270,7 +322,6 @@
             50% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
         }
     </style>
-    <script src='//libtl.com/sdk.js' data-zone='10366687' data-sdk='show_10366687'></script>
 </head>
 <body class="text-white min-h-screen pb-20">
     <!-- ============================================ -->
@@ -305,7 +356,7 @@
                 </div>
             </div>
             
-            <a href="https://t.me/File_AssistBot" class="telegram-only-btn" target="_blank">
+            <a href="https://t.me/YOUR_BOT_USERNAME" class="telegram-only-btn" target="_blank">
                 <svg viewBox="0 0 24 24">
                     <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.324-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.015 3.333-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.142.121.1.154.234.169.359.015.124.034.398.019.612z"/>
                 </svg>
@@ -639,33 +690,53 @@
     </script>
 
     <!-- ============================================ -->
-    <!-- ADVANCED AD BLOCKER v2.0 -->
-    <!-- Blocks ALL third-party ads, popups, trackers -->
-    <!-- Only allows PropellerAds and Adsterra -->
+    <!-- ULTRA AD BLOCKER v4.0 - MAXIMUM PROTECTION -->
+    <!-- Blocks ALL ads, popups, redirects, trackers -->
+    <!-- Like Brave browser - blocks everything except your ads -->
     <!-- ============================================ -->
     <script>
         (function() {
             'use strict';
             
-            // ========== ALLOWED DOMAINS (Your ads + essential services) ==========
+            console.log('%c[Streamm Ultra AdBlock v4.0] Initializing...', 'color: #8b5cf6; font-weight: bold;');
+            
+            // ========== CONFIGURATION ==========
+            const CONFIG = {
+                blockAllNewTabs: true,
+                blockClickHijacking: true,
+                blockIframeBreakout: true,
+                blockOverlays: true,
+                cleanupInterval: 300,
+                debug: false
+            };
+            
+            // ========== ALLOWED DOMAINS ==========
             const ALLOWED_DOMAINS = [
-                // PropellerAds
+                // PropellerAds - ALL domains
                 'propellerads.com', 'propellerclick.com', 'propu.sh', 'propeller-tracking.com',
                 'servedbypropeller.com', 'propellerscdn.com', 'onclickmax.com', 'pushnest.com',
                 'notix.io', 'pushame.com', 'oapush.com', 'iclickcdn.com', 'outcomewithshe.com',
-                'glicmoty.net', 'acwebnc.com', 'sstatic.net', 'tsyndicate.com',
-                'thubanoa.com', // PropellerAds rewarded interstitial domain
-                // Adsterra
+                'glicmoty.net', 'acwebnc.com', 'sstatic.net', 'thubanoa.com', 'pushno.com',
+                'pushno.net', 'propush.me', 'protagoffonede.com', 'psaltaede.com',
+                
+                // Adsterra - ALL domains
                 'adsterra.com', 'adsterracdn.com', 'astrfrm.com', 'hb-api.omnitagjs.com',
                 'profitabledisplaynetwork.com', 'highperformanceformat.com', 'adstera.com',
-                'pitofficialfollower.com', // Your Adsterra social bar domain
+                'pitofficialfollower.com', 'adsterratech.com', 'adsterraltd.com',
+                
                 // Essential services
                 'themoviedb.org', 'image.tmdb.org', 'api.themoviedb.org',
                 'fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net',
                 'telegram.org', 't.me',
-                // Streaming sources (only the player itself)
+                
+                // Streaming sources ONLY (no ads from these)
                 '2embed.cc', 'vidsrc.icu', 'vidsrc.cc', 'smashy.stream', 'autoembed.cc',
-                'nontongo.win', 'embed.su', 'vidsrc.me', 'vidsrc.to', 'vidsrc.xyz'
+                'nontongo.win', 'embed.su', 'vidsrc.me', 'vidsrc.to', 'vidsrc.xyz',
+                'player.smashy.stream', 'player.autoembed.cc', 'www.2embed.cc',
+                'www.nontongo.win',
+                
+                // Current site
+                window.location.hostname
             ];
             
             // ========== BLOCKED DOMAINS (Comprehensive list) ==========
@@ -785,52 +856,128 @@
                 } catch { return false; }
             }
             
-            // ========== BLOCK window.open (POPUPS) ==========
+            // ========== BLOCK window.open (POPUPS) - AGGRESSIVE ==========
             const origOpen = window.open;
             window.open = function(url, name, features) {
+                popupAttempts++;
                 // Block ALL popups except our allowed domains
-                if (!url) return null;
+                if (!url) {
+                    console.log('[Streamm] Blocked empty popup');
+                    return null;
+                }
                 try {
                     const hostname = new URL(url, window.location.origin).hostname;
-                    if (!ALLOWED_DOMAINS.some(d => hostname.includes(d))) {
+                    const isAllowed = ALLOWED_DOMAINS.some(d => hostname.includes(d) || hostname.endsWith('.' + d));
+                    if (!isAllowed) {
                         console.log('[Streamm] Blocked popup:', url);
                         return null;
                     }
                 } catch {
-                    console.log('[Streamm] Blocked popup:', url);
+                    console.log('[Streamm] Blocked malformed popup:', url);
                     return null;
                 }
                 return origOpen.apply(this, arguments);
             };
             
-            // ========== BLOCK CLICK HIJACKING ==========
+            // ========== BLOCK ALL CLICK-BASED REDIRECTS ==========
+            let isUserClick = false;
+            let clickTimer = null;
+            
+            document.addEventListener('mousedown', function(e) {
+                isUserClick = true;
+                clearTimeout(clickTimer);
+                clickTimer = setTimeout(() => { isUserClick = false; }, 1000);
+            }, true);
+            
             document.addEventListener('click', function(e) {
-                // Prevent clicks from opening unwanted windows
+                const now = Date.now();
+                
+                // Detect rapid clicks (likely ad scripts)
+                if (now - lastClickTime < 50) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    console.log('[Streamm] Blocked rapid click');
+                    return false;
+                }
+                lastClickTime = now;
+                
+                // Check if click is on iframe overlay
+                if (e.target.tagName === 'DIV' || e.target.tagName === 'A') {
+                    const style = window.getComputedStyle(e.target);
+                    if (style.position === 'fixed' || style.position === 'absolute') {
+                        const zIndex = parseInt(style.zIndex) || 0;
+                        if (zIndex > 1000 && !e.target.closest('.modal') && !e.target.closest('nav')) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('[Streamm] Blocked overlay click');
+                            return false;
+                        }
+                    }
+                }
+                
+                // Block link redirects
                 const target = e.target.closest('a');
                 if (target && target.href) {
                     try {
-                        const hostname = new URL(target.href).hostname;
-                        if (!ALLOWED_DOMAINS.some(d => hostname.includes(d)) && 
-                            !hostname.includes(window.location.hostname)) {
-                            if (target.target === '_blank' || e.ctrlKey || e.metaKey) {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                console.log('[Streamm] Blocked redirect:', target.href);
-                                return false;
-                            }
+                        const url = new URL(target.href);
+                        const hostname = url.hostname.toLowerCase();
+                        const isAllowed = ALLOWED_DOMAINS.some(d => hostname.includes(d) || hostname.endsWith('.' + d));
+                        const isSameSite = hostname === window.location.hostname;
+                        
+                        if (!isAllowed && !isSameSite) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+                            console.log('[Streamm] Blocked redirect:', target.href);
+                            return false;
                         }
                     } catch {}
                 }
             }, true);
             
+            // ========== BLOCK TOUCH EVENTS ON MOBILE ==========
+            document.addEventListener('touchstart', function(e) {
+                isUserClick = true;
+                clearTimeout(clickTimer);
+                clickTimer = setTimeout(() => { isUserClick = false; }, 1000);
+            }, true);
+            
             // ========== BLOCK MOUSE EVENTS HIJACKING ==========
-            ['mousedown', 'mouseup', 'contextmenu'].forEach(evt => {
+            ['mousedown', 'mouseup', 'contextmenu', 'auxclick', 'dblclick'].forEach(evt => {
                 document.addEventListener(evt, function(e) {
-                    if (e.target.closest('iframe:not(#player-frame)')) {
-                        // Allow events, but prevent external redirects
+                    // Block middle-click and right-click redirects
+                    if (evt === 'auxclick' && e.button === 1) {
+                        const target = e.target.closest('a');
+                        if (target && target.href) {
+                            try {
+                                const hostname = new URL(target.href).hostname;
+                                if (!ALLOWED_DOMAINS.some(d => hostname.includes(d))) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('[Streamm] Blocked middle-click redirect');
+                                    return false;
+                                }
+                            } catch {}
+                        }
                     }
                 }, true);
             });
+            
+            // ========== BLOCK FORM SUBMISSIONS TO EXTERNAL SITES ==========
+            document.addEventListener('submit', function(e) {
+                const form = e.target;
+                if (form && form.action) {
+                    try {
+                        const hostname = new URL(form.action).hostname;
+                        if (!ALLOWED_DOMAINS.some(d => hostname.includes(d))) {
+                            e.preventDefault();
+                            console.log('[Streamm] Blocked form submission:', form.action);
+                            return false;
+                        }
+                    } catch {}
+                }
+            }, true);
             
             // ========== BLOCK FETCH REQUESTS ==========
             const origFetch = window.fetch;
@@ -1047,8 +1194,1160 @@
                 window.history.replaceState({}, '', url.toString());
             }
             
-            console.log('%c[Streamm AdBlock v2.0] Active', 'color: #8b5cf6; font-weight: bold; font-size: 14px;');
-            console.log('%cBlocking ads, popups, and trackers. Only PropellerAds & Adsterra allowed.', 'color: #a78bfa;');
+            // ========== BLOCK HISTORY MANIPULATION ==========
+            const origPushState = history.pushState;
+            const origReplaceState = history.replaceState;
+            history.pushState = function(state, title, url) {
+                if (url && typeof url === 'string') {
+                    try {
+                        const newUrl = new URL(url, window.location.origin);
+                        if (newUrl.origin !== window.location.origin) {
+                            console.log('[Streamm] Blocked history manipulation:', url);
+                            return;
+                        }
+                    } catch {}
+                }
+                return origPushState.apply(this, arguments);
+            };
+            history.replaceState = function(state, title, url) {
+                if (url && typeof url === 'string') {
+                    try {
+                        const newUrl = new URL(url, window.location.origin);
+                        if (newUrl.origin !== window.location.origin) {
+                            console.log('[Streamm] Blocked history manipulation:', url);
+                            return;
+                        }
+                    } catch {}
+                }
+                return origReplaceState.apply(this, arguments);
+            };
+            
+            // ========== BLOCK LOCATION CHANGES ==========
+            let locationLocked = false;
+            const origLocationAssign = window.location.assign;
+            const origLocationReplace = window.location.replace;
+            
+            if (origLocationAssign) {
+                window.location.assign = function(url) {
+                    if (locationLocked) return;
+                    try {
+                        const hostname = new URL(url, window.location.origin).hostname;
+                        if (!ALLOWED_DOMAINS.some(d => hostname.includes(d)) && hostname !== window.location.hostname) {
+                            console.log('[Streamm] Blocked location.assign:', url);
+                            return;
+                        }
+                    } catch {}
+                    return origLocationAssign.call(this, url);
+                };
+            }
+            
+            if (origLocationReplace) {
+                window.location.replace = function(url) {
+                    if (locationLocked) return;
+                    try {
+                        const hostname = new URL(url, window.location.origin).hostname;
+                        if (!ALLOWED_DOMAINS.some(d => hostname.includes(d)) && hostname !== window.location.hostname) {
+                            console.log('[Streamm] Blocked location.replace:', url);
+                            return;
+                        }
+                    } catch {}
+                    return origLocationReplace.call(this, url);
+                };
+            }
+            
+            // ========== BLOCK SETTIMEOUT/SETINTERVAL POPUPS ==========
+            const origSetTimeout = window.setTimeout;
+            const origSetInterval = window.setInterval;
+            
+            window.setTimeout = function(fn, delay, ...args) {
+                if (typeof fn === 'string' && (fn.includes('window.open') || fn.includes('location') || fn.includes('href'))) {
+                    console.log('[Streamm] Blocked setTimeout redirect');
+                    return 0;
+                }
+                return origSetTimeout.call(this, fn, delay, ...args);
+            };
+            
+            window.setInterval = function(fn, delay, ...args) {
+                if (typeof fn === 'string' && (fn.includes('window.open') || fn.includes('location') || fn.includes('href'))) {
+                    console.log('[Streamm] Blocked setInterval redirect');
+                    return 0;
+                }
+                return origSetInterval.call(this, fn, delay, ...args);
+            };
+            
+            // ========== PREVENT IFRAME FROM CHANGING PARENT LOCATION ==========
+            try {
+                Object.defineProperty(window, 'top', {
+                    get: function() { return window; },
+                    configurable: false
+                });
+            } catch {}
+            
+            // ========== BLOCK POSTMESSAGE REDIRECTS ==========
+            window.addEventListener('message', function(e) {
+                if (e.data && typeof e.data === 'string') {
+                    if (e.data.includes('redirect') || e.data.includes('location') || e.data.includes('window.open')) {
+                        console.log('[Streamm] Blocked postMessage redirect');
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                    }
+                }
+                if (e.data && typeof e.data === 'object') {
+                    if (e.data.type === 'redirect' || e.data.action === 'redirect' || e.data.url) {
+                        try {
+                            const url = e.data.url || e.data.href || e.data.link;
+                            if (url) {
+                                const hostname = new URL(url).hostname;
+                                if (!ALLOWED_DOMAINS.some(d => hostname.includes(d))) {
+                                    console.log('[Streamm] Blocked postMessage redirect:', url);
+                                    e.stopPropagation();
+                                    e.stopImmediatePropagation();
+                                }
+                            }
+                        } catch {}
+                    }
+                }
+            }, true);
+            
+            // ========== NUCLEAR OPTION: BLOCK ALL NEW TAB/WINDOW OPENS ==========
+            // Store original functions
+            const _origOpen = window.open;
+            const _origClick = HTMLElement.prototype.click;
+            const _origDispatchEvent = EventTarget.prototype.dispatchEvent;
+            
+            // Completely override window.open
+            Object.defineProperty(window, 'open', {
+                value: function(url, target, features) {
+                    if (!url) {
+                        console.log('[Streamm] Blocked empty window.open');
+                        return null;
+                    }
+                    
+                    try {
+                        const urlObj = new URL(url, window.location.origin);
+                        const hostname = urlObj.hostname.toLowerCase();
+                        
+                        // Only allow if domain is in whitelist
+                        const isAllowed = ALLOWED_DOMAINS.some(d => 
+                            hostname === d || 
+                            hostname.endsWith('.' + d) || 
+                            d.includes(hostname)
+                        );
+                        
+                        if (!isAllowed) {
+                            console.log('[Streamm] BLOCKED window.open:', url);
+                            return null;
+                        }
+                        
+                        return _origOpen.call(window, url, target, features);
+                    } catch (e) {
+                        console.log('[Streamm] Blocked malformed URL:', url);
+                        return null;
+                    }
+                },
+                writable: false,
+                configurable: false
+            });
+            
+            // ========== BLOCK ALL CLICK-BASED NEW TABS ==========
+            let userInitiatedClick = false;
+            let lastUserClickTime = 0;
+            let blockedClicks = 0;
+            
+            // Track real user interactions
+            ['mousedown', 'touchstart', 'pointerdown'].forEach(eventType => {
+                document.addEventListener(eventType, function(e) {
+                    userInitiatedClick = true;
+                    lastUserClickTime = Date.now();
+                    setTimeout(() => { userInitiatedClick = false; }, 500);
+                }, { capture: true, passive: true });
+            });
+            
+            // Block all suspicious clicks
+            document.addEventListener('click', function(e) {
+                const now = Date.now();
+                const timeSinceUserClick = now - lastUserClickTime;
+                
+                // Block if no recent user interaction (script-triggered)
+                if (timeSinceUserClick > 1000) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    blockedClicks++;
+                    console.log('[Streamm] Blocked script-triggered click');
+                    return false;
+                }
+                
+                // Check for anchor tags with external links
+                const anchor = e.target.closest('a');
+                if (anchor && anchor.href) {
+                    try {
+                        const url = new URL(anchor.href);
+                        const hostname = url.hostname.toLowerCase();
+                        const isSameSite = hostname === window.location.hostname;
+                        const isAllowed = ALLOWED_DOMAINS.some(d => hostname.includes(d) || hostname.endsWith('.' + d));
+                        
+                        // Block external links that are not allowed
+                        if (!isSameSite && !isAllowed) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+                            console.log('[Streamm] Blocked external link:', anchor.href);
+                            return false;
+                        }
+                        
+                        // Block target="_blank" links to non-allowed domains
+                        if (anchor.target === '_blank' && !isAllowed && !isSameSite) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('[Streamm] Blocked _blank link:', anchor.href);
+                            return false;
+                        }
+                    } catch (err) {}
+                }
+                
+                // Block clicks on invisible overlays
+                const style = window.getComputedStyle(e.target);
+                const zIndex = parseInt(style.zIndex) || 0;
+                const isFixed = style.position === 'fixed' || style.position === 'absolute';
+                const isTransparent = parseFloat(style.opacity) < 0.1;
+                const isHidden = style.visibility === 'hidden' || style.display === 'none';
+                
+                if (isFixed && zIndex > 100 && !e.target.closest('.modal') && !e.target.closest('nav') && !e.target.closest('header') && !e.target.closest('.player-container')) {
+                    // Check if this is an overlay ad
+                    const rect = e.target.getBoundingClientRect();
+                    if (rect.width > 100 && rect.height > 100) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        e.target.remove(); // Remove the overlay
+                        console.log('[Streamm] Blocked & removed overlay click');
+                        return false;
+                    }
+                }
+            }, { capture: true });
+            
+            // ========== BLOCK SYNTHETIC CLICK EVENTS ==========
+            HTMLElement.prototype.click = function() {
+                const now = Date.now();
+                if (now - lastUserClickTime > 1000) {
+                    console.log('[Streamm] Blocked synthetic click');
+                    return;
+                }
+                return _origClick.apply(this, arguments);
+            };
+            
+            // ========== BLOCK LOCATION CHANGES ==========
+            // Intercept location.href setter
+            const origLocationDescriptor = Object.getOwnPropertyDescriptor(window, 'location');
+            let locationLocked = false;
+            
+            // Block location.assign and location.replace
+            const _origAssign = location.assign.bind(location);
+            const _origReplace = location.replace.bind(location);
+            
+            location.assign = function(url) {
+                if (!url) return;
+                try {
+                    const hostname = new URL(url, window.location.origin).hostname;
+                    if (hostname !== window.location.hostname && !ALLOWED_DOMAINS.some(d => hostname.includes(d))) {
+                        console.log('[Streamm] Blocked location.assign:', url);
+                        return;
+                    }
+                } catch (e) {}
+                return _origAssign(url);
+            };
+            
+            location.replace = function(url) {
+                if (!url) return;
+                try {
+                    const hostname = new URL(url, window.location.origin).hostname;
+                    if (hostname !== window.location.hostname && !ALLOWED_DOMAINS.some(d => hostname.includes(d))) {
+                        console.log('[Streamm] Blocked location.replace:', url);
+                        return;
+                    }
+                } catch (e) {}
+                return _origReplace(url);
+            };
+            
+            // ========== BLOCK FORM SUBMISSIONS ==========
+            document.addEventListener('submit', function(e) {
+                const form = e.target;
+                if (form.action) {
+                    try {
+                        const hostname = new URL(form.action).hostname;
+                        if (!ALLOWED_DOMAINS.some(d => hostname.includes(d)) && hostname !== window.location.hostname) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('[Streamm] Blocked form submit:', form.action);
+                            return false;
+                        }
+                    } catch (err) {}
+                }
+            }, { capture: true });
+            
+            // ========== BLOCK IFRAME NAVIGATION ==========
+            // Prevent iframes from navigating parent
+            try {
+                Object.defineProperty(window, 'top', { get: () => window, configurable: false });
+                Object.defineProperty(window, 'parent', { get: () => window, configurable: false });
+            } catch (e) {}
+            
+            // ========== AGGRESSIVE DOM CLEANUP ==========
+            const adPatterns = [
+                // IDs
+                /^(ad|ads|advert|banner|sponsor|popup|pop-up|popunder|overlay)/i,
+                /(google_ads|google-ad|googleAd|aswift_|adslot|ad-slot|ad_slot)/i,
+                
+                // Classes
+                /\b(ad|ads|advert|banner|sponsor|popup|popunder|overlay|interstitial)\b/i,
+                /(adsbox|ad-container|ad-wrapper|ad-unit|advertisement)/i
+            ];
+            
+            const adSelectors = [
+                // Google Ads
+                'ins.adsbygoogle', '[id^="google_ads"]', '[id^="aswift_"]',
+                'iframe[src*="googlesyndication"]', 'iframe[src*="doubleclick"]',
+                
+                // Generic ad patterns
+                '[id*="ad-container"]', '[id*="ad_container"]', '[id*="ad-wrapper"]',
+                '[id*="banner-ad"]', '[id*="ad-banner"]', '[class*="ad-container"]',
+                '[class*="ad-wrapper"]', '[class*="ad-unit"]', '[class*="advertisement"]',
+                
+                // Popups/Overlays
+                '[class*="popup"]', '[class*="popunder"]', '[class*="overlay-ad"]',
+                '[class*="interstitial"]', '[class*="modal-ad"]',
+                
+                // Tracking pixels
+                'img[src*="pixel"]', 'img[src*="track"]', 'img[src*="beacon"]',
+                'img[width="1"][height="1"]', 'img[style*="display:none"]',
+                
+                // Social buttons (often used for tracking)
+                '[class*="fb-like"]', '[class*="twitter-share"]',
+                
+                // Amp ads
+                'amp-ad', 'amp-embed', 'amp-sticky-ad'
+            ];
+            
+            function isOurElement(el) {
+                if (!el) return false;
+                // Don't remove our own elements
+                if (el.closest('.ad-banner')) return true;
+                if (el.closest('.vignette-banner')) return true;
+                if (el.closest('.smartlink-btn')) return true;
+                if (el.closest('.modal')) return true;
+                if (el.closest('nav')) return true;
+                if (el.closest('header')) return true;
+                if (el.closest('#player-page')) return true;
+                if (el.id === 'player-frame') return true;
+                
+                // Check if it's from our allowed domains
+                if (el.tagName === 'IFRAME' && el.src) {
+                    const isAllowed = ALLOWED_DOMAINS.some(d => el.src.includes(d));
+                    if (isAllowed) return true;
+                }
+                
+                return false;
+            }
+            
+            function removeAdElements() {
+                // Remove by selectors
+                adSelectors.forEach(selector => {
+                    try {
+                        document.querySelectorAll(selector).forEach(el => {
+                            if (!isOurElement(el)) {
+                                el.remove();
+                            }
+                        });
+                    } catch (e) {}
+                });
+                
+                // Remove high z-index overlays
+                document.querySelectorAll('div, section, aside, iframe').forEach(el => {
+                    if (isOurElement(el)) return;
+                    
+                    try {
+                        const style = window.getComputedStyle(el);
+                        const zIndex = parseInt(style.zIndex) || 0;
+                        const isFixed = style.position === 'fixed' || style.position === 'absolute';
+                        
+                        // Remove suspicious overlays
+                        if (isFixed && zIndex > 9000) {
+                            el.remove();
+                            console.log('[Streamm] Removed high z-index overlay');
+                        }
+                        
+                        // Remove invisible iframes (tracking)
+                        if (el.tagName === 'IFRAME') {
+                            const rect = el.getBoundingClientRect();
+                            if (rect.width <= 1 || rect.height <= 1) {
+                                if (!ALLOWED_DOMAINS.some(d => (el.src || '').includes(d))) {
+                                    el.remove();
+                                }
+                            }
+                        }
+                    } catch (e) {}
+                });
+                
+                // Remove elements matching ad patterns
+                document.querySelectorAll('*').forEach(el => {
+                    if (isOurElement(el)) return;
+                    
+                    const id = el.id || '';
+                    const className = el.className || '';
+                    
+                    if (typeof className === 'string') {
+                        for (const pattern of adPatterns) {
+                            if (pattern.test(id) || pattern.test(className)) {
+                                if (!isOurElement(el)) {
+                                    el.remove();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Run cleanup frequently
+            setInterval(removeAdElements, CONFIG.cleanupInterval);
+            
+            // ========== MUTATION OBSERVER FOR REAL-TIME BLOCKING ==========
+            const observer = new MutationObserver((mutations) => {
+                for (const mutation of mutations) {
+                    for (const node of mutation.addedNodes) {
+                        if (node.nodeType !== 1) continue; // Only element nodes
+                        
+                        // Block script injections from bad domains
+                        if (node.tagName === 'SCRIPT') {
+                            const src = node.src || '';
+                            if (src && !ALLOWED_DOMAINS.some(d => src.includes(d))) {
+                                if (shouldBlockUrl(src)) {
+                                    node.remove();
+                                    console.log('[Streamm] Blocked script:', src);
+                                }
+                            }
+                        }
+                        
+                        // Block iframe injections
+                        if (node.tagName === 'IFRAME') {
+                            const src = node.src || '';
+                            if (node.id !== 'player-frame' && !isOurElement(node)) {
+                                if (src && !ALLOWED_DOMAINS.some(d => src.includes(d))) {
+                                    node.remove();
+                                    console.log('[Streamm] Blocked iframe:', src);
+                                }
+                            }
+                        }
+                        
+                        // Block popup divs
+                        if (node.tagName === 'DIV' || node.tagName === 'SECTION') {
+                            const style = node.getAttribute('style') || '';
+                            if (style.includes('z-index') && style.includes('position')) {
+                                const zMatch = style.match(/z-index\s*:\s*(\d+)/);
+                                if (zMatch && parseInt(zMatch[1]) > 9000) {
+                                    if (!isOurElement(node)) {
+                                        node.remove();
+                                        console.log('[Streamm] Blocked popup div');
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Remove anchor tags with external ad links
+                        if (node.tagName === 'A') {
+                            const href = node.href || '';
+                            if (href && !ALLOWED_DOMAINS.some(d => href.includes(d))) {
+                                const hostname = window.location.hostname;
+                                if (!href.includes(hostname)) {
+                                    node.removeAttribute('href');
+                                    node.style.pointerEvents = 'none';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            observer.observe(document.documentElement, {
+                childList: true,
+                subtree: true
+            });
+            
+            // ========== BLOCK NETWORK REQUESTS ==========
+            function shouldBlockUrl(url) {
+                if (!url) return false;
+                
+                const blockedPatterns = [
+                    /pop(up|under|ads)/i, /\/(ads?|advert)\//i, /banner/i,
+                    /tracking/i, /analytics/i, /pixel/i, /beacon/i,
+                    /doubleclick/i, /googlesyndication/i, /googleadservices/i,
+                    /facebook\.net/i, /fbcdn/i, /popads/i, /popcash/i,
+                    /clickadu/i, /exoclick/i, /trafficjunky/i, /juicyads/i,
+                    /adcash/i, /propellerclick/i, /mgid/i, /outbrain/i,
+                    /taboola/i, /revcontent/i, /criteo/i
+                ];
+                
+                return blockedPatterns.some(p => p.test(url));
+            }
+            
+            // Block fetch
+            const _origFetch = window.fetch;
+            window.fetch = function(input, init) {
+                const url = typeof input === 'string' ? input : input?.url;
+                if (url && shouldBlockUrl(url) && !ALLOWED_DOMAINS.some(d => url.includes(d))) {
+                    console.log('[Streamm] Blocked fetch:', url);
+                    return Promise.reject(new Error('Blocked by Streamm'));
+                }
+                return _origFetch.apply(this, arguments);
+            };
+            
+            // Block XHR
+            const _origXHROpen = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function(method, url) {
+                this._blockedUrl = url && shouldBlockUrl(url) && !ALLOWED_DOMAINS.some(d => url.includes(d));
+                if (this._blockedUrl) {
+                    console.log('[Streamm] Blocked XHR:', url);
+                }
+                return _origXHROpen.apply(this, arguments);
+            };
+            
+            const _origXHRSend = XMLHttpRequest.prototype.send;
+            XMLHttpRequest.prototype.send = function() {
+                if (this._blockedUrl) return;
+                return _origXHRSend.apply(this, arguments);
+            };
+            
+            // ========== BLOCK TIMERS THAT CREATE ADS ==========
+            const _origSetTimeout = window.setTimeout;
+            const _origSetInterval = window.setInterval;
+            
+            window.setTimeout = function(fn, delay, ...args) {
+                if (typeof fn === 'string') {
+                    if (/window\.open|location|href|popup|redirect/i.test(fn)) {
+                        console.log('[Streamm] Blocked setTimeout code');
+                        return 0;
+                    }
+                }
+                return _origSetTimeout.call(this, fn, delay, ...args);
+            };
+            
+            window.setInterval = function(fn, delay, ...args) {
+                if (typeof fn === 'string') {
+                    if (/window\.open|location|href|popup|redirect/i.test(fn)) {
+                        console.log('[Streamm] Blocked setInterval code');
+                        return 0;
+                    }
+                }
+                return _origSetInterval.call(this, fn, delay, ...args);
+            };
+            
+            // ========== BLOCK BEFOREUNLOAD POPUPS ==========
+            window.addEventListener('beforeunload', function(e) {
+                delete e.returnValue;
+            }, { capture: true });
+            
+            // ========== BLOCK FOCUS STEALING ==========
+            window.addEventListener('blur', function(e) {
+                setTimeout(() => window.focus(), 0);
+            }, { capture: true });
+            
+            // ========== BLOCK VISIBILITY CHANGE HIJACKING ==========
+            let realVisibilityState = document.visibilityState;
+            Object.defineProperty(document, 'hidden', {
+                get: () => false,
+                configurable: true
+            });
+            
+            // ========== BLOCK POSTMESSAGE ATTACKS ==========
+            window.addEventListener('message', function(e) {
+                if (e.data) {
+                    const data = typeof e.data === 'string' ? e.data : JSON.stringify(e.data);
+                    if (/redirect|location|window\.open|popup/i.test(data)) {
+                        e.stopImmediatePropagation();
+                        console.log('[Streamm] Blocked postMessage attack');
+                    }
+                }
+            }, { capture: true });
+            
+            // ========== BLOCK NOTIFICATION SPAM ==========
+            if ('Notification' in window) {
+                Notification.requestPermission = () => Promise.resolve('denied');
+            }
+            
+            // ========== CLEAN URL PARAMS ==========
+            if (window.location.search) {
+                const params = new URLSearchParams(window.location.search);
+                let changed = false;
+                ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'ref', 'source', 'clickid', 'gclid', 'fbclid'].forEach(p => {
+                    if (params.has(p)) {
+                        params.delete(p);
+                        changed = true;
+                    }
+                });
+                if (changed) {
+                    const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '') + window.location.hash;
+                    history.replaceState({}, '', newUrl);
+                }
+            }
+            
+            // ========== BLOCK KEYBOARD SHORTCUTS HIJACKING ==========
+            document.addEventListener('keydown', function(e) {
+                // Don't let sites block Escape key
+                if (e.key === 'Escape') {
+                    // Allow our manual fullscreen to work
+                    return;
+                }
+            }, { capture: true });
+            
+            // ========== INITIAL CLEANUP ==========
+            document.addEventListener('DOMContentLoaded', function() {
+                removeAdElements();
+                console.log('%c[Streamm Ultra AdBlock v4.0] Active', 'color: #22c55e; font-weight: bold; font-size: 14px;');
+                console.log('%cBlocking ALL external ads. Only PropellerAds & Adsterra allowed.', 'color: #86efac;');
+            });
+            
+            // Also run immediately
+            if (document.readyState !== 'loading') {
+                removeAdElements();
+            }
+            
+            console.log('%c[Streamm Ultra AdBlock v4.0] Loaded', 'color: #8b5cf6; font-weight: bold; font-size: 14px;');
+            
+            // ========== ADDITIONAL PROTECTIONS ==========
+            
+            // ========== BLOCK WEBSOCKET CONNECTIONS TO AD SERVERS ==========
+            const _origWebSocket = window.WebSocket;
+            window.WebSocket = function(url, protocols) {
+                if (url && !ALLOWED_DOMAINS.some(d => url.includes(d))) {
+                    if (shouldBlockUrl(url)) {
+                        console.log('[Streamm] Blocked WebSocket:', url);
+                        throw new Error('Blocked by Streamm');
+                    }
+                }
+                return new _origWebSocket(url, protocols);
+            };
+            window.WebSocket.prototype = _origWebSocket.prototype;
+            
+            // ========== BLOCK BEACON API (Tracking) ==========
+            if (navigator.sendBeacon) {
+                const _origSendBeacon = navigator.sendBeacon.bind(navigator);
+                navigator.sendBeacon = function(url, data) {
+                    if (url && !ALLOWED_DOMAINS.some(d => url.includes(d))) {
+                        if (shouldBlockUrl(url)) {
+                            console.log('[Streamm] Blocked Beacon:', url);
+                            return false;
+                        }
+                    }
+                    return _origSendBeacon(url, data);
+                };
+            }
+            
+            // ========== BLOCK IMAGE TRACKING PIXELS ==========
+            const _origImage = window.Image;
+            window.Image = function(width, height) {
+                const img = new _origImage(width, height);
+                const _origSrcDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+                Object.defineProperty(img, 'src', {
+                    set: function(value) {
+                        if (value && !ALLOWED_DOMAINS.some(d => value.includes(d))) {
+                            if (shouldBlockUrl(value) || (width === 1 && height === 1)) {
+                                console.log('[Streamm] Blocked Image Tracking:', value);
+                                return;
+                            }
+                        }
+                        _origSrcDescriptor.set.call(this, value);
+                    },
+                    get: function() {
+                        return _origSrcDescriptor.get.call(this);
+                    }
+                });
+                return img;
+            };
+            window.Image.prototype = _origImage.prototype;
+            
+            // ========== BLOCK SERVICE WORKER REGISTRATION (Ad networks use these) ==========
+            if ('serviceWorker' in navigator) {
+                const _origRegister = navigator.serviceWorker.register.bind(navigator.serviceWorker);
+                navigator.serviceWorker.register = function(scriptURL, options) {
+                    if (scriptURL && !ALLOWED_DOMAINS.some(d => scriptURL.includes(d))) {
+                        console.log('[Streamm] Blocked ServiceWorker:', scriptURL);
+                        return Promise.reject(new Error('Blocked by Streamm'));
+                    }
+                    return _origRegister(scriptURL, options);
+                };
+            }
+            
+            // ========== BLOCK AUDIO CONTEXT (Fingerprinting) ==========
+            const _origAudioContext = window.AudioContext || window.webkitAudioContext;
+            if (_origAudioContext) {
+                window.AudioContext = window.webkitAudioContext = function() {
+                    const ctx = new _origAudioContext();
+                    // Override methods used for fingerprinting
+                    const _origCreateOscillator = ctx.createOscillator.bind(ctx);
+                    ctx.createOscillator = function() {
+                        console.log('[Streamm] AudioContext fingerprinting blocked');
+                        return _origCreateOscillator();
+                    };
+                    return ctx;
+                };
+            }
+            
+            // ========== BLOCK CANVAS FINGERPRINTING ==========
+            const _origToDataURL = HTMLCanvasElement.prototype.toDataURL;
+            const _origGetImageData = CanvasRenderingContext2D.prototype.getImageData;
+            
+            HTMLCanvasElement.prototype.toDataURL = function(type) {
+                // Add slight noise to prevent fingerprinting
+                if (this.width > 16 && this.height > 16) {
+                    const ctx = this.getContext('2d');
+                    if (ctx) {
+                        const imageData = ctx.getImageData(0, 0, 1, 1);
+                        imageData.data[0] = Math.random() > 0.5 ? imageData.data[0] + 1 : imageData.data[0];
+                        ctx.putImageData(imageData, 0, 0);
+                    }
+                }
+                return _origToDataURL.apply(this, arguments);
+            };
+            
+            // ========== BLOCK WEBRTC IP LEAK ==========
+            if (window.RTCPeerConnection) {
+                const _origRTCPeerConnection = window.RTCPeerConnection;
+                window.RTCPeerConnection = function(config) {
+                    // Block if no iceServers (likely used for IP detection)
+                    if (!config || !config.iceServers || config.iceServers.length === 0) {
+                        console.log('[Streamm] Blocked WebRTC IP leak attempt');
+                        throw new Error('Blocked by Streamm');
+                    }
+                    return new _origRTCPeerConnection(config);
+                };
+                window.RTCPeerConnection.prototype = _origRTCPeerConnection.prototype;
+            }
+            
+            // ========== BLOCK BATTERY API (Fingerprinting) ==========
+            if (navigator.getBattery) {
+                navigator.getBattery = function() {
+                    console.log('[Streamm] Blocked Battery API fingerprinting');
+                    return Promise.reject(new Error('Blocked by Streamm'));
+                };
+            }
+            
+            // ========== BLOCK DEVICE MEMORY API (Fingerprinting) ==========
+            if ('deviceMemory' in navigator) {
+                Object.defineProperty(navigator, 'deviceMemory', {
+                    get: () => 8,
+                    configurable: true
+                });
+            }
+            
+            // ========== BLOCK HARDWARE CONCURRENCY (Fingerprinting) ==========
+            Object.defineProperty(navigator, 'hardwareConcurrency', {
+                get: () => 4,
+                configurable: true
+            });
+            
+            // ========== BLOCK EVAL (Ad scripts use this) ==========
+            const _origEval = window.eval;
+            window.eval = function(code) {
+                if (typeof code === 'string') {
+                    // Block if code contains ad-related keywords
+                    if (/window\.open|location\s*=|href\s*=|popup|popunder|redirect/i.test(code)) {
+                        console.log('[Streamm] Blocked eval() with suspicious code');
+                        return undefined;
+                    }
+                }
+                return _origEval.call(this, code);
+            };
+            
+            // ========== BLOCK FUNCTION CONSTRUCTOR (Ad scripts use this) ==========
+            const _origFunction = window.Function;
+            window.Function = function() {
+                const code = arguments[arguments.length - 1];
+                if (typeof code === 'string') {
+                    if (/window\.open|location\s*=|href\s*=|popup|popunder|redirect/i.test(code)) {
+                        console.log('[Streamm] Blocked Function() with suspicious code');
+                        return function() {};
+                    }
+                }
+                return _origFunction.apply(this, arguments);
+            };
+            window.Function.prototype = _origFunction.prototype;
+            
+            // ========== BLOCK DOCUMENT.WRITE (Ad injection) ==========
+            const _origDocWrite = document.write.bind(document);
+            const _origDocWriteln = document.writeln.bind(document);
+            
+            document.write = function(markup) {
+                if (typeof markup === 'string') {
+                    if (/script.*src.*(?:ad|track|pop|click)/i.test(markup)) {
+                        console.log('[Streamm] Blocked document.write with ad script');
+                        return;
+                    }
+                }
+                return _origDocWrite(markup);
+            };
+            
+            document.writeln = function(markup) {
+                if (typeof markup === 'string') {
+                    if (/script.*src.*(?:ad|track|pop|click)/i.test(markup)) {
+                        console.log('[Streamm] Blocked document.writeln with ad script');
+                        return;
+                    }
+                }
+                return _origDocWriteln(markup);
+            };
+            
+            // ========== BLOCK INSERTADJACENTHTML (Ad injection) ==========
+            const _origInsertAdjacentHTML = Element.prototype.insertAdjacentHTML;
+            Element.prototype.insertAdjacentHTML = function(position, text) {
+                if (typeof text === 'string') {
+                    if (/script.*src.*(?:ad|track|pop|click)|onclick.*(?:window\.open|location)/i.test(text)) {
+                        console.log('[Streamm] Blocked insertAdjacentHTML with suspicious content');
+                        return;
+                    }
+                }
+                return _origInsertAdjacentHTML.call(this, position, text);
+            };
+            
+            // ========== BLOCK INNERHTML SET (Ad injection) ==========
+            const _origInnerHTMLDescriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+            Object.defineProperty(Element.prototype, 'innerHTML', {
+                set: function(value) {
+                    if (typeof value === 'string' && value.length > 100) {
+                        // Check for suspicious patterns
+                        if (/onclick.*window\.open|<script.*(?:pop|ad|track)/i.test(value)) {
+                            // Strip suspicious scripts
+                            value = value.replace(/<script[^>]*(?:pop|ad|track)[^>]*>[\s\S]*?<\/script>/gi, '');
+                        }
+                    }
+                    return _origInnerHTMLDescriptor.set.call(this, value);
+                },
+                get: function() {
+                    return _origInnerHTMLDescriptor.get.call(this);
+                },
+                configurable: true
+            });
+            
+            // ========== BLOCK APPEND/PREPEND WITH AD ELEMENTS ==========
+            const _origAppend = Element.prototype.append;
+            const _origPrepend = Element.prototype.prepend;
+            const _origAppendChild = Node.prototype.appendChild;
+            const _origInsertBefore = Node.prototype.insertBefore;
+            
+            function isAdElement(node) {
+                if (!node || node.nodeType !== 1) return false;
+                if (node.tagName === 'SCRIPT' && node.src && shouldBlockUrl(node.src)) return true;
+                if (node.tagName === 'IFRAME' && node.src && shouldBlockUrl(node.src)) return true;
+                if (node.tagName === 'A' && node.href) {
+                    try {
+                        const hostname = new URL(node.href).hostname;
+                        if (!ALLOWED_DOMAINS.some(d => hostname.includes(d)) && hostname !== window.location.hostname) {
+                            return true;
+                        }
+                    } catch(e) {}
+                }
+                return false;
+            }
+            
+            Element.prototype.append = function() {
+                for (const node of arguments) {
+                    if (isAdElement(node)) {
+                        console.log('[Streamm] Blocked append() of ad element');
+                        return;
+                    }
+                }
+                return _origAppend.apply(this, arguments);
+            };
+            
+            Element.prototype.prepend = function() {
+                for (const node of arguments) {
+                    if (isAdElement(node)) {
+                        console.log('[Streamm] Blocked prepend() of ad element');
+                        return;
+                    }
+                }
+                return _origPrepend.apply(this, arguments);
+            };
+            
+            Node.prototype.appendChild = function(node) {
+                if (isAdElement(node)) {
+                    console.log('[Streamm] Blocked appendChild() of ad element');
+                    return node;
+                }
+                return _origAppendChild.call(this, node);
+            };
+            
+            Node.prototype.insertBefore = function(newNode, refNode) {
+                if (isAdElement(newNode)) {
+                    console.log('[Streamm] Blocked insertBefore() of ad element');
+                    return newNode;
+                }
+                return _origInsertBefore.call(this, newNode, refNode);
+            };
+            
+            // ========== BLOCK SETATTRIBUTE FOR SRC/HREF ==========
+            const _origSetAttribute = Element.prototype.setAttribute;
+            Element.prototype.setAttribute = function(name, value) {
+                if ((name === 'src' || name === 'href') && typeof value === 'string') {
+                    if (shouldBlockUrl(value) && !ALLOWED_DOMAINS.some(d => value.includes(d))) {
+                        console.log('[Streamm] Blocked setAttribute:', name, value);
+                        return;
+                    }
+                }
+                return _origSetAttribute.call(this, name, value);
+            };
+            
+            // ========== BLOCK CSS @IMPORT FROM AD DOMAINS ==========
+            const _origInsertRule = CSSStyleSheet.prototype.insertRule;
+            if (_origInsertRule) {
+                CSSStyleSheet.prototype.insertRule = function(rule, index) {
+                    if (typeof rule === 'string' && /@import.*url/i.test(rule)) {
+                        const match = rule.match(/url\(['"]?([^'")\s]+)['"]?\)/i);
+                        if (match && shouldBlockUrl(match[1])) {
+                            console.log('[Streamm] Blocked CSS @import:', match[1]);
+                            return 0;
+                        }
+                    }
+                    return _origInsertRule.call(this, rule, index);
+                };
+            }
+            
+            // ========== AGGRESSIVE CLICK PROTECTION FOR PLAYER ==========
+            let playerClickCount = 0;
+            let playerLastClick = 0;
+            
+            document.addEventListener('click', function(e) {
+                // If clicking inside player area
+                if (e.target.closest('.player-container') || e.target.closest('#player-frame')) {
+                    const now = Date.now();
+                    
+                    // Block rapid clicks
+                    if (now - playerLastClick < 300) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        console.log('[Streamm] Blocked rapid player click');
+                        return false;
+                    }
+                    
+                    playerLastClick = now;
+                    playerClickCount++;
+                    
+                    // First 2 clicks on player are usually ads
+                    if (playerClickCount <= 2) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        console.log('[Streamm] Absorbed player ad click', playerClickCount);
+                        return false;
+                    }
+                }
+            }, { capture: true });
+            
+            // Reset player click count when source changes
+            const _playerFrame = document.getElementById('player-frame');
+            if (_playerFrame) {
+                new MutationObserver(function() {
+                    playerClickCount = 0;
+                    console.log('[Streamm] Player source changed, reset click count');
+                }).observe(_playerFrame, { attributes: true, attributeFilter: ['src'] });
+            }
+            
+            // ========== BLOCK ALL POINTER EVENTS ON OVERLAYS ==========
+            setInterval(function() {
+                document.querySelectorAll('div, iframe').forEach(el => {
+                    if (isOurElement(el)) return;
+                    
+                    try {
+                        const style = window.getComputedStyle(el);
+                        const zIndex = parseInt(style.zIndex) || 0;
+                        const isFixed = style.position === 'fixed' || style.position === 'absolute';
+                        
+                        if (isFixed && zIndex > 5000 && !el.closest('.modal') && !el.closest('nav') && !el.closest('header') && !el.closest('.player-container')) {
+                            el.style.pointerEvents = 'none';
+                            el.style.display = 'none';
+                            console.log('[Streamm] Disabled overlay');
+                        }
+                    } catch(e) {}
+                });
+            }, 200);
+            
+            // ========== NUCLEAR OPTION: CAPTURE ALL EVENTS ==========
+            ['click', 'mousedown', 'mouseup', 'touchstart', 'touchend', 'pointerdown', 'pointerup'].forEach(eventType => {
+                window.addEventListener(eventType, function(e) {
+                    // Block if target is from external domain iframe
+                    try {
+                        if (e.target.tagName === 'IFRAME' && e.target.id !== 'player-frame') {
+                            const src = e.target.src || '';
+                            if (src && !ALLOWED_DOMAINS.some(d => src.includes(d))) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                e.stopImmediatePropagation();
+                                e.target.remove();
+                                console.log('[Streamm] Blocked click on external iframe & removed it');
+                                return false;
+                            }
+                        }
+                    } catch(err) {}
+                    
+                    // Block if event target has suspicious onclick
+                    const onclick = e.target.getAttribute ? e.target.getAttribute('onclick') : null;
+                    if (onclick && /window\.open|location|href\s*=/i.test(onclick)) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        e.target.removeAttribute('onclick');
+                        console.log('[Streamm] Blocked element with suspicious onclick');
+                        return false;
+                    }
+                }, { capture: true, passive: false });
+            });
+            
+            console.log('%c[Streamm Brave-Shield v5.0] MAXIMUM PROTECTION ACTIVE', 'color: #22c55e; font-weight: bold; font-size: 16px;');
+            console.log('%c🛡️ Blocking: Popups, Redirects, Trackers, Fingerprinting, WebSockets, Beacons, Service Workers', 'color: #86efac;');
+            console.log('%c✅ Allowing: PropellerAds, Adsterra only', 'color: #4ade80;');
+            
+            // ========== SMART CLICK PROTECTION FOR PLAYER AREA ==========
+            // Only blocks suspicious behavior, allows normal player controls
+            (function() {
+                let lastGlobalClick = 0;
+                
+                // Only block truly suspicious clicks - not normal player interactions
+                document.addEventListener('click', function(e) {
+                    const now = Date.now();
+                    const isPlayerArea = e.target.closest('.player-container');
+                    
+                    if (isPlayerArea) {
+                        const target = e.target;
+                        const tagName = target.tagName.toLowerCase();
+                        
+                        // Allow clicks on the iframe itself (player controls)
+                        if (tagName === 'iframe' || target.id === 'player-frame') {
+                            return; // Allow normal player interaction
+                        }
+                        
+                        // Allow clicks on our own elements
+                        if (target.closest('#click-shield') || 
+                            target.closest('#shield-content') ||
+                            target.closest('#player-loading') ||
+                            target.closest('#player-error')) {
+                            return; // Allow our UI elements
+                        }
+                        
+                        // Block ultra-rapid clicks (bot behavior) - only < 30ms
+                        if (now - lastGlobalClick < 30) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('[Streamm] 🚫 Blocked ultra-rapid click');
+                            return false;
+                        }
+                        lastGlobalClick = now;
+                        
+                        // Block external anchor links
+                        if (tagName === 'a') {
+                            try {
+                                const href = target.href || '';
+                                if (href) {
+                                    const hostname = new URL(href, window.location.origin).hostname;
+                                    const allowed = ['propellerads.com', 'adsterra.com', 'pitofficialfollower.com', 'thubanoa.com', 't.me', 'telegram.org', window.location.hostname];
+                                    if (!allowed.some(d => hostname.includes(d))) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        target.remove();
+                                        console.log('[Streamm] 🛡️ Blocked external link');
+                                        return false;
+                                    }
+                                }
+                            } catch(err) {}
+                        }
+                        
+                        // Block clicks on invisible overlays only
+                        if (tagName === 'div' || tagName === 'span') {
+                            const style = window.getComputedStyle(target);
+                            const opacity = parseFloat(style.opacity);
+                            
+                            // Only block truly invisible elements (opacity < 0.1)
+                            if (opacity < 0.1 && style.position === 'absolute') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                target.remove();
+                                console.log('[Streamm] 🛡️ Removed invisible overlay');
+                                return false;
+                            }
+                        }
+                    }
+                }, true);
+                
+                console.log('[Streamm] 🎯 Smart Click Protection Active');
+            })();
+            
+            // ========== IFRAME POPUP BLOCKING ==========
+            // We don't use sandbox attribute as it breaks player controls
+            // Instead we rely on our window.open blocker which is always active
+            (function() {
+                console.log('[Streamm] 🔒 Iframe Popup Blocking via window.open override');
+            })();
+            
+            // ========== POPUP BLOCKING (Non-intrusive) ==========
+            (function() {
+                // Block legacy popup methods
+                if (window.showModalDialog) {
+                    window.showModalDialog = function() { return null; };
+                }
+                if (window.showModelessDialog) {
+                    window.showModelessDialog = function() { return null; };
+                }
+                
+                // Block window manipulation (used by popups)
+                ['moveTo', 'moveBy', 'resizeTo', 'resizeBy'].forEach(method => {
+                    window[method] = function() { return false; };
+                });
+                
+                // Block form submission to new windows
+                const origFormSubmit = HTMLFormElement.prototype.submit;
+                HTMLFormElement.prototype.submit = function() {
+                    if (this.target === '_blank' || this.target === '_new') {
+                        console.log('[Streamm] 🛡️ Blocked form submit to new window');
+                        return false;
+                    }
+                    return origFormSubmit.call(this);
+                };
+                
+                console.log('[Streamm] 💪 Popup Blocking Active');
+            })();
+            
+            // ========== BACKGROUND AD CLEANUP ==========
+            // Runs periodically to remove injected ad overlays (non-intrusive)
+            (function() {
+                const cleanupAds = function() {
+                    // Only remove truly suspicious overlays with very high z-index
+                    document.querySelectorAll('div, iframe').forEach(el => {
+                        // Skip our elements
+                        if (el.closest('.modal')) return;
+                        if (el.closest('.player-container')) return;
+                        if (el.closest('nav')) return;
+                        if (el.closest('header')) return;
+                        if (el.id && (el.id.includes('player') || el.id.includes('adsterra') || el.id.includes('container-'))) return;
+                        
+                        try {
+                            const style = window.getComputedStyle(el);
+                            const zIndex = parseInt(style.zIndex) || 0;
+                            
+                            // Only remove fixed position elements with z-index > 99999 (likely ad overlays)
+                            if (style.position === 'fixed' && zIndex > 99999) {
+                                el.remove();
+                                console.log('[Streamm] 🗑️ Removed ad overlay');
+                            }
+                        } catch(e) {}
+                    });
+                };
+                
+                // Run every 2 seconds (less aggressive)
+                setInterval(cleanupAds, 2000);
+                
+                console.log('[Streamm] 👀 Background Ad Cleanup Active');
+            })();
+            
         })();
     </script>
 
@@ -1060,17 +2359,6 @@
         // PropellerAds Rewarded Interstitial - Zone ID: 10366687
         // This will be called when user clicks "Watch Ad for Bonus Content"
     </script>
-
-    <!-- ============================================ -->
-    <!-- ADSTERRA - Social Bar -->
-    <!-- ============================================ -->
-    <script async="async" data-cfasync="false" src="https://pitofficialfollower.com/7bf782da742ab399d21c3a341973ec92/invoke.js"></script>
-    <div id="container-7bf782da742ab399d21c3a341973ec92"></div>
-
-    <!-- ============================================ -->
-    <!-- ADSTERRA - Social Banner -->
-    <!-- ============================================ -->
-    <script src="https://pitofficialfollower.com/c5/9f/6a/c59f6a086f4cf5cc48a61ae8b34786e3.js"></script>
 
     <!-- Header -->
     <header class="sticky top-0 z-50 glass border-b border-white/10">
@@ -1236,6 +2524,21 @@
             </script>
             <script src="https://pitofficialfollower.com/cb0a9f0993122aaba39b218695c72b88/invoke.js"></script>
         </div>
+
+        <!-- ============================================ -->
+        <!-- ADSTERRA - Social Bar (Moved here from top) -->
+        <!-- ============================================ -->
+        <div class="mb-4">
+            <script async="async" data-cfasync="false" src="https://pitofficialfollower.com/7bf782da742ab399d21c3a341973ec92/invoke.js"></script>
+            <div id="container-7bf782da742ab399d21c3a341973ec92"></div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- ADSTERRA - Social Banner -->
+        <!-- ============================================ -->
+        <div class="mb-4">
+            <script src="https://pitofficialfollower.com/c5/9f/6a/c59f6a086f4cf5cc48a61ae8b34786e3.js"></script>
+        </div>
     </main>
 
     <!-- Sidebar ads removed - were blocking view -->
@@ -1302,7 +2605,369 @@
                 </div>
             </div>
             <iframe id="player-frame" class="player-iframe" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" scrolling="no"></iframe>
+            <!-- Smart Click Protection Overlay -->
+            <div id="click-shield" class="absolute inset-0 z-20 cursor-pointer flex items-center justify-center" style="display:flex; background: rgba(0,0,0,0.7);">
+                <div id="shield-content" class="text-center p-6 bg-black/90 rounded-2xl border border-purple-500/30 max-w-xs mx-4">
+                    <div class="text-5xl mb-3">🛡️</div>
+                    <h3 class="text-lg font-bold text-white mb-2">Ad Protection Active</h3>
+                    <p class="text-sm text-gray-300 mb-3">Streaming sites have hidden ads. Click <span id="clicks-remaining" class="text-purple-400 font-bold">3</span> times to unlock the player.</p>
+                    <div class="flex justify-center gap-2 mb-3">
+                        <div id="dot-1" class="w-3 h-3 rounded-full bg-gray-600"></div>
+                        <div id="dot-2" class="w-3 h-3 rounded-full bg-gray-600"></div>
+                        <div id="dot-3" class="w-3 h-3 rounded-full bg-gray-600"></div>
+                    </div>
+                    <button id="shield-tap-btn" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-semibold text-white">
+                        Tap to Unlock Player
+                    </button>
+                    <p class="text-xs text-gray-500 mt-2">This blocks popup ads from streaming sites</p>
+                </div>
+            </div>
+            
+            <!-- Permanent Click Interceptor (stays active during playback) -->
+            <div id="click-interceptor" class="absolute inset-0 z-15" style="display:none; pointer-events:none;"></div>
+            
+            <!-- Hidden ad blocker message -->
+            <div id="shield-message" class="absolute top-4 left-1/2 transform -translate-x-1/2 z-30 bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium opacity-0 transition-opacity pointer-events-none">
+                ✅ Ad Blocked!
+            </div>
         </div>
+        
+        <!-- ULTIMATE PLAYER PROTECTION SYSTEM v2.0 -->
+        <script>
+            (function() {
+                'use strict';
+                
+                console.log('[Streamm Player Protection v2.0] Initializing MAXIMUM PROTECTION...');
+                
+                // ========== CONFIGURATION ==========
+                const CLICKS_REQUIRED = 3;
+                const CONTINUOUS_PROTECTION = true;
+                const INTERCEPT_ALL_CLICKS = true;
+                
+                // ========== STATE ==========
+                let clickCount = 0;
+                let lastClickTime = 0;
+                let shieldActive = true;
+                let popupAttempts = 0;
+                let interceptorActive = false;
+                let totalBlocked = 0;
+                
+                // ========== ALLOWED DOMAINS ==========
+                const ALLOWED_DOMAINS = [
+                    'propellerads.com', 'adsterra.com', 'pitofficialfollower.com', 
+                    'thubanoa.com', 't.me', 'telegram.org', window.location.hostname
+                ];
+                
+                // ========== ELEMENTS ==========
+                const playerContainer = document.querySelector('.player-container');
+                const clickShield = document.getElementById('click-shield');
+                const clickInterceptor = document.getElementById('click-interceptor');
+                const shieldMessage = document.getElementById('shield-message');
+                const shieldContent = document.getElementById('shield-content');
+                const clicksRemaining = document.getElementById('clicks-remaining');
+                const shieldTapBtn = document.getElementById('shield-tap-btn');
+                const playerFrame = document.getElementById('player-frame');
+                const dots = [
+                    document.getElementById('dot-1'),
+                    document.getElementById('dot-2'),
+                    document.getElementById('dot-3')
+                ];
+                
+                if (!playerContainer || !clickShield || !playerFrame) {
+                    console.log('[Streamm] Player elements not found');
+                    return;
+                }
+                
+                // ========== SHOW BLOCKED TOAST ==========
+                function showBlockedToast() {
+                    totalBlocked++;
+                    
+                    // Remove existing toast
+                    const existingToast = document.querySelector('.blocked-toast');
+                    if (existingToast) existingToast.remove();
+                    
+                    // Create new toast
+                    const toast = document.createElement('div');
+                    toast.className = 'blocked-toast';
+                    toast.innerHTML = `🛡️ Ad Blocked! (${totalBlocked} total)`;
+                    document.body.appendChild(toast);
+                    
+                    // Remove after 2 seconds
+                    setTimeout(() => toast.remove(), 2000);
+                    
+                    // Also update shield message
+                    if (shieldMessage) {
+                        shieldMessage.textContent = `✅ ${totalBlocked} Ads Blocked!`;
+                        shieldMessage.style.opacity = '1';
+                        setTimeout(() => shieldMessage.style.opacity = '0', 2000);
+                    }
+                    
+                    console.log('[Streamm] 🛡️ BLOCKED AD #' + totalBlocked);
+                }
+                
+                // ========== NUCLEAR POPUP BLOCKER ==========
+                const _originalOpen = window.open;
+                const blockedOpen = function(url, name, features) {
+                    popupAttempts++;
+                    
+                    // Check if allowed
+                    if (url) {
+                        try {
+                            const hostname = new URL(url, window.location.origin).hostname;
+                            const isAllowed = ALLOWED_DOMAINS.some(d => hostname.includes(d));
+                            if (isAllowed) {
+                                return _originalOpen.apply(this, arguments);
+                            }
+                        } catch(e) {}
+                    }
+                    
+                    console.log('[Streamm] 🛡️ BLOCKED window.open:', url);
+                    showBlockedToast();
+                    return null;
+                };
+                
+                // Replace and lock window.open
+                window.open = blockedOpen;
+                try {
+                    Object.defineProperty(window, 'open', {
+                        value: blockedOpen,
+                        writable: false,
+                        configurable: false
+                    });
+                } catch(e) {}
+                
+                // ========== UPDATE UI ==========
+                function updateShieldUI() {
+                    const remaining = CLICKS_REQUIRED - clickCount;
+                    if (clicksRemaining) clicksRemaining.textContent = remaining;
+                    
+                    dots.forEach((dot, i) => {
+                        if (dot) {
+                            dot.classList.toggle('bg-purple-500', i < clickCount);
+                            dot.classList.toggle('bg-gray-600', i >= clickCount);
+                        }
+                    });
+                    
+                    if (shieldTapBtn) {
+                        if (remaining === 1) shieldTapBtn.textContent = '🎬 Last tap to play!';
+                        else if (remaining === 0) shieldTapBtn.textContent = '✅ Unlocked!';
+                        else shieldTapBtn.textContent = `Tap ${remaining} more times`;
+                    }
+                }
+                
+                // ========== ACTIVATE SHIELD ==========
+                function activateShield() {
+                    shieldActive = true;
+                    clickCount = 0;
+                    if (clickShield) clickShield.style.display = 'flex';
+                    if (clickInterceptor) clickInterceptor.style.display = 'none';
+                    updateShieldUI();
+                    console.log('[Streamm] 🛡️ Shield ACTIVATED');
+                }
+                
+                // ========== ACTIVATE INTERCEPTOR (after shield) ==========
+                function activateInterceptor() {
+                    interceptorActive = true;
+                    if (clickInterceptor) {
+                        clickInterceptor.style.display = 'block';
+                        // Set to none so clicks pass through to iframe immediately
+                        clickInterceptor.style.pointerEvents = 'none';
+                    }
+                    console.log('[Streamm] 🔒 Click Interceptor ACTIVATED (pass-through mode)');
+                }
+                
+                // ========== DEACTIVATE SHIELD ==========
+                function deactivateShield() {
+                    shieldActive = false;
+                    if (clickShield) clickShield.style.display = 'none';
+                    
+                    // Activate the click interceptor for continuous protection
+                    if (CONTINUOUS_PROTECTION) {
+                        activateInterceptor();
+                    }
+                    
+                    showBlockedToast();
+                    console.log('[Streamm] ✅ Shield DOWN - Interceptor UP');
+                }
+                
+                // ========== SHIELD CLICK HANDLER ==========
+                function handleShieldClick(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    
+                    clickCount++;
+                    lastClickTime = Date.now();
+                    
+                    console.log('[Streamm] 🛡️ Shield absorbed click ' + clickCount + '/' + CLICKS_REQUIRED);
+                    updateShieldUI();
+                    
+                    if (dots[clickCount - 1]) {
+                        dots[clickCount - 1].style.transform = 'scale(1.3)';
+                        setTimeout(() => dots[clickCount - 1].style.transform = '', 200);
+                    }
+                    
+                    if (clickCount >= CLICKS_REQUIRED) {
+                        setTimeout(deactivateShield, 300);
+                    }
+                    
+                    return false;
+                }
+                
+                if (clickShield) {
+                    clickShield.addEventListener('click', handleShieldClick, true);
+                    clickShield.addEventListener('touchend', handleShieldClick, true);
+                }
+                if (shieldTapBtn) {
+                    shieldTapBtn.addEventListener('click', handleShieldClick, true);
+                    shieldTapBtn.addEventListener('touchend', handleShieldClick, true);
+                }
+                
+                // ========== CLICK INTERCEPTOR HANDLER ==========
+                // This runs AFTER the shield is down, for continuous protection
+                // Now uses pass-through mode - doesn't block clicks, only monitors
+                let interceptorClicks = 0;
+                let lastInterceptTime = 0;
+                
+                // We don't add click handlers to interceptor anymore
+                // Instead, we rely on the global popup blocker which is always active
+                // This allows player controls to work smoothly
+                
+                // ========== OBSERVE IFRAME CHANGES ==========
+                const srcObserver = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.attributeName === 'src') {
+                            console.log('[Streamm] 🔄 Source changed - Reactivating shield');
+                            popupAttempts = 0;
+                            interceptorClicks = 0;
+                            activateShield();
+                        }
+                    });
+                });
+                if (playerFrame) {
+                    srcObserver.observe(playerFrame, { attributes: true, attributeFilter: ['src'] });
+                }
+                
+                // ========== BLOCK FOCUS STEALING ==========
+                window.addEventListener('blur', function(e) {
+                    if (document.activeElement === playerFrame) {
+                        setTimeout(() => window.focus(), 0);
+                    }
+                });
+                
+                // ========== BLOCK VISIBILITY TRICKS ==========
+                let realHidden = false;
+                Object.defineProperty(document, 'hidden', {
+                    get: () => realHidden,
+                    set: (v) => { realHidden = v; }
+                });
+                
+                // ========== BLOCK NAVIGATION ATTEMPTS ==========
+                window.addEventListener('beforeunload', function(e) {
+                    if (shieldActive || interceptorActive) {
+                        e.preventDefault();
+                        e.returnValue = '';
+                        showBlockedToast();
+                        return '';
+                    }
+                });
+                
+                // ========== BLOCK POSTMESSAGE REDIRECTS ==========
+                window.addEventListener('message', function(e) {
+                    const data = e.data;
+                    if (data) {
+                        const str = typeof data === 'string' ? data : JSON.stringify(data);
+                        if (/redirect|window\.open|location|navigate|popup/i.test(str)) {
+                            e.stopImmediatePropagation();
+                            console.log('[Streamm] 🛡️ Blocked postMessage:', str.substring(0, 100));
+                            showBlockedToast();
+                            return false;
+                        }
+                    }
+                }, true);
+                
+                // ========== BLOCK CLICKS ON SUSPICIOUS ELEMENTS ==========
+                document.addEventListener('click', function(e) {
+                    // Block clicks on invisible/overlay elements
+                    const target = e.target;
+                    const style = window.getComputedStyle(target);
+                    
+                    // Check for suspicious overlay
+                    if (target.closest('.player-container') && target !== playerFrame) {
+                        const zIndex = parseInt(style.zIndex) || 0;
+                        const opacity = parseFloat(style.opacity);
+                        
+                        // Block invisible overlays or high z-index elements
+                        if (opacity < 0.1 && zIndex > 10) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            target.remove();
+                            console.log('[Streamm] 🛡️ Removed invisible overlay');
+                            showBlockedToast();
+                            return false;
+                        }
+                    }
+                    
+                    // Block external links from player area
+                    const link = target.closest('a');
+                    if (link && link.href && target.closest('.player-container')) {
+                        try {
+                            const hostname = new URL(link.href).hostname;
+                            const isAllowed = ALLOWED_DOMAINS.some(d => hostname.includes(d));
+                            const isSameSite = hostname === window.location.hostname;
+                            
+                            if (!isAllowed && !isSameSite) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('[Streamm] 🛡️ Blocked link:', link.href);
+                                showBlockedToast();
+                                return false;
+                            }
+                        } catch(err) {}
+                    }
+                }, true);
+                
+                // ========== PERIODIC CLEANUP ==========
+                setInterval(function() {
+                    // Remove suspicious elements from player area
+                    if (playerContainer) {
+                        playerContainer.querySelectorAll('a, div, iframe').forEach(el => {
+                            if (el === playerFrame || el === clickShield || el === clickInterceptor) return;
+                            if (el.id === 'player-frame' || el.id === 'click-shield' || el.id === 'click-interceptor') return;
+                            if (el.id === 'player-loading' || el.id === 'player-error' || el.id === 'shield-message') return;
+                            if (el.id === 'shield-content') return;
+                            if (el.closest('#shield-content')) return;
+                            
+                            const style = window.getComputedStyle(el);
+                            const zIndex = parseInt(style.zIndex) || 0;
+                            const position = style.position;
+                            
+                            // Remove high z-index overlays
+                            if ((position === 'fixed' || position === 'absolute') && zIndex > 100) {
+                                console.log('[Streamm] 🗑️ Removed overlay element');
+                                el.remove();
+                            }
+                            
+                            // Remove hidden iframes
+                            if (el.tagName === 'IFRAME' && el !== playerFrame) {
+                                const rect = el.getBoundingClientRect();
+                                if (rect.width < 10 || rect.height < 10) {
+                                    console.log('[Streamm] 🗑️ Removed hidden iframe');
+                                    el.remove();
+                                }
+                            }
+                        });
+                    }
+                }, 500);
+                
+                // ========== INITIAL ACTIVATION ==========
+                activateShield();
+                
+                console.log('[Streamm Player Protection v2.0] ✅ MAXIMUM PROTECTION ACTIVE');
+                console.log('[Streamm] 🛡️ Shield + Interceptor + Popup Blocker + Overlay Removal');
+                
+            })();
+        </script>
         
         <div class="p-4">
             <!-- Adsterra 300x250 After Player -->
@@ -2023,34 +3688,112 @@
         function toggleFullscreen() {
             const playerContainer = document.querySelector('.player-container');
             const iframe = document.getElementById('player-frame');
+            const playerPage = document.getElementById('player-page');
             
-            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement) {
-                // Enter fullscreen - try iframe first, then container
-                if (iframe.requestFullscreen) {
-                    iframe.requestFullscreen().catch(() => {
-                        // If iframe fails, try container
-                        if (playerContainer.requestFullscreen) {
-                            playerContainer.requestFullscreen();
-                        }
+            // Check if already in fullscreen
+            const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || 
+                                document.mozFullScreenElement || document.msFullscreenElement ||
+                                playerContainer.classList.contains('manual-fullscreen');
+            
+            if (!isFullscreen) {
+                // Try native fullscreen first
+                const fsElement = playerContainer;
+                
+                const requestFS = fsElement.requestFullscreen || 
+                                 fsElement.webkitRequestFullscreen || 
+                                 fsElement.mozRequestFullScreen || 
+                                 fsElement.msRequestFullscreen ||
+                                 fsElement.webkitEnterFullscreen;
+                
+                if (requestFS) {
+                    requestFS.call(fsElement).then(() => {
+                        console.log('[Streamm] Native fullscreen activated');
+                    }).catch((err) => {
+                        console.log('[Streamm] Native fullscreen failed, using manual fullscreen');
+                        enableManualFullscreen(playerContainer, playerPage);
                     });
-                } else if (iframe.webkitRequestFullscreen) {
-                    iframe.webkitRequestFullscreen();
-                } else if (iframe.mozRequestFullScreen) {
-                    iframe.mozRequestFullScreen();
-                } else if (playerContainer.requestFullscreen) {
-                    playerContainer.requestFullscreen();
+                } else {
+                    // Fallback to manual fullscreen (for Telegram Mini App)
+                    enableManualFullscreen(playerContainer, playerPage);
                 }
             } else {
                 // Exit fullscreen
                 if (document.exitFullscreen) {
-                    document.exitFullscreen();
+                    document.exitFullscreen().catch(() => disableManualFullscreen(playerContainer, playerPage));
                 } else if (document.webkitExitFullscreen) {
                     document.webkitExitFullscreen();
                 } else if (document.mozCancelFullScreen) {
                     document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                } else {
+                    disableManualFullscreen(playerContainer, playerPage);
                 }
             }
         }
+        
+        // Manual fullscreen for Telegram Mini App
+        function enableManualFullscreen(container, page) {
+            container.classList.add('manual-fullscreen');
+            container.style.cssText = `
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                max-height: 100vh !important;
+                z-index: 99999 !important;
+                background: #000 !important;
+            `;
+            document.body.style.overflow = 'hidden';
+            
+            // Update icon
+            const icon = document.getElementById('fullscreen-icon');
+            if (icon) {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9L4 4m0 0v4m0-4h4m7 5l5-5m0 0v4m0-4h-4M9 15l-5 5m0 0v-4m0 4h4m7-5l5 5m0 0v-4m0 4h-4"/>';
+            }
+            
+            // Tell Telegram we're in fullscreen
+            if (window.Telegram && window.Telegram.WebApp) {
+                try {
+                    Telegram.WebApp.expand();
+                    Telegram.WebApp.disableVerticalSwipes();
+                } catch(e) {}
+            }
+            
+            console.log('[Streamm] Manual fullscreen enabled');
+        }
+        
+        function disableManualFullscreen(container, page) {
+            container.classList.remove('manual-fullscreen');
+            container.style.cssText = '';
+            document.body.style.overflow = '';
+            
+            // Update icon
+            const icon = document.getElementById('fullscreen-icon');
+            if (icon) {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>';
+            }
+            
+            // Re-enable Telegram swipes
+            if (window.Telegram && window.Telegram.WebApp) {
+                try {
+                    Telegram.WebApp.enableVerticalSwipes();
+                } catch(e) {}
+            }
+            
+            console.log('[Streamm] Manual fullscreen disabled');
+        }
+        
+        // Handle ESC key for manual fullscreen
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const container = document.querySelector('.player-container');
+                if (container && container.classList.contains('manual-fullscreen')) {
+                    disableManualFullscreen(container, document.getElementById('player-page'));
+                }
+            }
+        });
         
         // Listen for fullscreen changes to update icon
         document.addEventListener('fullscreenchange', updateFullscreenIcon);
@@ -2059,7 +3802,12 @@
         
         function updateFullscreenIcon() {
             const icon = document.getElementById('fullscreen-icon');
-            if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement) {
+            const container = document.querySelector('.player-container');
+            const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || 
+                                document.mozFullScreenElement || document.msFullscreenElement ||
+                                (container && container.classList.contains('manual-fullscreen'));
+            
+            if (isFullscreen) {
                 icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9L4 4m0 0v4m0-4h4m7 5l5-5m0 0v4m0-4h-4M9 15l-5 5m0 0v-4m0 4h4m7-5l5 5m0 0v-4m0 4h-4"/>';
             } else {
                 icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>';
